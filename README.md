@@ -1,3 +1,3 @@
-# stux.ai
+# DarkSalxm Website
 
 Nothing is here yet.
