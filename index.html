@@ -1,214 +1,517 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S2J43CMT6B"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-S2J43CMT6B');
-    </script>
 
-    <!-- Meta Tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DarkSalxm - The Fake Vtuber. Come hang out and say hi on Twitch!">
-    <meta name="author" content="DarkSalxm">
-    <meta name="keywords" content="DarkSalxm, Vtuber, Twitch, Streaming, Fake Vtuber">
-    <meta property="og:title" content="DarkSalxm The Fake Vtuber">
-    <meta property="og:description" content="DarkSalxm - The Fake Vtuber. Come hang out and say hi on Twitch!">
-    <meta property="og:image" content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
-    <meta property="og:url" content="https://salxm.com">
-    <meta name="twitter:card" content="summary_large_image">
-    <title>DarkSalxm The Fake Vtuber</title>
+  <!-- ═══════════════════════════════════════════
+       GOOGLE ANALYTICS
+  ═══════════════════════════════════════════ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-S2J43CMT6B"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-S2J43CMT6B');
+  </script>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        custom: ['Poppins', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+  <!-- ═══════════════════════════════════════════
+       META & SEO
+  ═══════════════════════════════════════════ -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="DarkSalxm — The Fake VTuber. Streaming chaos, games, and vibes you won't find anywhere else. Watch live on Twitch.">
+  <meta name="author" content="DarkSalxm">
+  <meta name="keywords" content="DarkSalxm, Vtuber, Twitch, Streaming, Fake Vtuber, TikTok">
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Open Graph -->
+  <meta property="og:title"       content="DarkSalxm — The Fake VTuber">
+  <meta property="og:description" content="Streaming chaos, games, and vibes you won't find anywhere else.">
+  <meta property="og:image"       content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
+  <meta property="og:url"         content="https://salxm.com">
+  <meta property="og:type"        content="website">
 
-    <!-- Particle.js -->
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:site"        content="@Darksalxm">
+  <meta name="twitter:title"       content="DarkSalxm — The Fake VTuber">
+  <meta name="twitter:description" content="Streaming chaos, games, and vibes you won't find anywhere else.">
+  <meta name="twitter:image"       content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
 
-    <!-- Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <title>DarkSalxm — The Fake VTuber</title>
 
-    <style>
-        /* Lazy Loading Spinner */
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+  <!-- ═══════════════════════════════════════════
+       FONTS
+  ═══════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-        /* Particle.js Container */
-        #particles-js {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-        /* Responsive Design Fixes */
-        @media (max-width: 640px) {
-            .text-center h1 {
-                font-size: 1.5rem;
-            }
+  <!-- ═══════════════════════════════════════════
+       STYLESHEET
+  ═══════════════════════════════════════════ -->
+  <link rel="stylesheet" href="style.css">
 
-            .grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-        }
-    </style>
-
-    <script>
-        // Optimized Background Image Logic
-        const backgrounds = [
-            'https://pbs.twimg.com/media/Gdj17DCWsAAV1Bc?format=jpg&name=large',
-            'https://pbs.twimg.com/media/Gan_VifWEAAWD78?format=jpg&name=large',
-            'https://pbs.twimg.com/media/GZjPt-eWUAINrqR?format=jpg&name=4096x4096',
-            'https://pbs.twimg.com/media/GbCKgFiXQAE2eg9?format=jpg&name=large',
-            'https://pbs.twimg.com/media/GalG9zoXYAAWpBV?format=jpg&name=900x900',
-            'https://pbs.twimg.com/media/Gab6ay_WcAApqTi?format=jpg&name=large',
-            'https://pbs.twimg.com/media/GZYPn-VXYAAFhRy?format=jpg&name=large',
-        ];
-
-        function setRandomBackground() {
-            const randomIndex = Math.floor(Math.random() * backgrounds.length);
-            const selectedBackground = backgrounds[randomIndex];
-            const backgroundElement = document.getElementById('background');
-
-            // Add a loading spinner until the image loads
-            const spinner = document.createElement('div');
-            spinner.className = 'loading-spinner';
-            backgroundElement.appendChild(spinner);
-
-            // Preload the image
-            const img = new Image();
-            img.src = selectedBackground;
-            img.onload = function () {
-                backgroundElement.style.backgroundImage = `url("${selectedBackground}")`;
-                spinner.remove();
-            };
-        }
-
-        // Timer Pop-up Logic
-        function showTimerPopup() {
-            const now = new Date();
-            const cstOffset = -6; // CST offset in hours from UTC
-            const currentCSTTime = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (cstOffset * 3600000));
-
-            const startHour = 19; // 7 PM CST
-            const endHour = 23; // 11 PM CST
-
-            if (currentCSTTime.getHours() >= startHour && currentCSTTime.getHours() < endHour) {
-                document.getElementById('timerPopup').classList.remove('hidden');
-            }
-        }
-
-        // Close Pop-up
-        function closePopup() {
-            document.getElementById('timerPopup').classList.add('hidden');
-        }
-
-        // Initialize Functions
-        window.onload = function () {
-            setRandomBackground();
-            showTimerPopup();
-
-            // Initialize Particle.js
-            particlesJS.load('particles-js', 'https://cdn.jsdelivr.net/particles.js/2.0.0/particlesjs-config.json', function() {
-                console.log('Particles.js loaded');
-            });
-        }
-    </script>
 </head>
-<body class="font-custom">
-    <div id="particles-js"></div>
+<body>
 
-    <div class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-600 to-blue-500 p-4 sm:p-6 md:p-8">
-        <div id="background" class="absolute inset-0 bg-cover bg-center">
-            <div class="absolute inset-0 backdrop-blur-md bg-black/40"></div>
+  <!-- ── BACKGROUND LAYERS ── -->
+  <div id="bg-art"></div>
+  <div class="glow-blob purple"></div>
+  <div class="glow-blob pink"></div>
+
+  <!-- ════════════════════════════════════════════
+       NAVIGATION
+  ════════════════════════════════════════════ -->
+  <nav>
+    <a href="#" class="nav-logo">Dark<span class="slash">/</span>Salxm</a>
+
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#schedule">Schedule</a></li>
+      <li><a href="#stream">Watch</a></li>
+      <li><a href="#platforms">Socials</a></li>
+      <li><a href="#support">Support</a></li>
+    </ul>
+
+    <!-- Only visible when live — toggled by script.js -->
+    <a id="nav-live-btn" class="nav-live offline"
+       href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener">
+      <span class="live-dot"></span>
+      LIVE NOW
+    </a>
+  </nav>
+
+  <!-- ════════════════════════════════════════════
+       PAGE WRAPPER
+  ════════════════════════════════════════════ -->
+  <div class="page">
+
+    <!-- ──────────────────────────────────────────
+         HERO
+    ────────────────────────────────────────── -->
+    <section id="hero">
+      <div class="hero-inner">
+
+        <div class="hero-eyebrow">
+          <div class="eyebrow-line"></div>
+          <span class="eyebrow-text">Independent VTuber · Twitch</span>
         </div>
 
-        <div class="relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl bg-white/10 backdrop-blur-md border-none text-white rounded-lg p-6 sm:p-8">
-            <div class="flex flex-col items-center space-y-6">
-                <div class="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-white/50">
-                    <img src="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg" alt="Darksalxm's Avatar" class="object-cover w-full h-full">
-                </div>
-                <div class="text-center">
-                    <h1 class="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-center">Darksalxm</h1>
-                    <p class="text-xs sm:text-sm md:text-base opacity-80 text-center">The Fake Vtuber</p>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full">
-                    <a href="https://twitch.tv/Darksalxm" class="flex items-center justify-center py-2 px-4 bg-white/20 hover:bg-white/30 border border-white/20 rounded-md transition duration-300">
-                        <i class="fab fa-twitch mr-2"></i>
-                        Twitch
-                    </a>
-                    <a href="https://www.tiktok.com/@salxmvt" class="flex items-center justify-center py-2 px-4 bg-white/20 hover:bg-white/30 border border-white/20 rounded-md transition duration-300">
-                        <i class="fab fa-tiktok mr-2"></i>
-                        TikTok
-                    </a>
-                    <a href="https://x.com/Darksalxm" class="flex items-center justify-center py-2 px-4 bg-white/20 hover:bg-white/30 border border-white/20 rounded-md transition duration-300">
-                        <i class="fab fa-twitter mr-2"></i>
-                        Twitter
-                    </a>
-                    <a href="https://youtube.com/@darksalxm" class="flex items-center justify-center py-2 px-4 bg-white/20 hover:bg-white/30 border border-white/20 rounded-md transition duration-300">
-                        <i class="fab fa-youtube mr-2"></i>
-                        YouTube
-                    </a>
-                    <a href="https://throne.com/darksalxm" class="flex items-center justify-center py-2 px-4 bg-white/20 hover:bg-white/30 border border-white/20 rounded-md transition duration-300">
-                        <i class="fas fa-crown mr-2"></i>
-                        Throne
-                    </a>
-                    <a href="https://discord.gg/fbP4QZpy9w" class="flex items-center justify-center py-2 px-4 bg-white/20 hover:bg-white/30 border border-white/20 rounded-md transition duration-300">
-                        <i class="fab fa-discord mr-2"></i>
-                        Discord
-                    </a>
-                </div>
+        <div class="hero-avatar-row">
+          <div class="avatar-frame">
+            <img
+              src="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg"
+              alt="DarkSalxm avatar">
+            <div class="avatar-status offline" id="hero-status"></div>
+          </div>
+          <div>
+            <div class="hero-live-label" id="live-status-text">● Offline</div>
+            <div class="hero-platform-label">DARKSALXM ON TWITCH</div>
+          </div>
+        </div>
+
+        <h1 class="hero-name">
+          <span class="glitch-wrap" data-text="DARK">DARK</span><span class="accent-word">SALXM</span>
+        </h1>
+        <div class="hero-tagline">// THE FAKE VTUBER</div>
+
+        <p class="hero-bio">
+          I'm <strong>DarkSalxm</strong> — a self-proclaimed Fake VTuber who streams the unexpected.
+          No script, no formula, just chaos, games, and a community that keeps showing up anyway.
+          <strong>Come hang out.</strong>
+        </p>
+
+        <div class="hero-cta-row">
+          <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" class="btn-primary">
+            <i class="fab fa-twitch"></i> Watch on Twitch
+          </a>
+          <a href="#about" class="btn-secondary">
+            Learn More <i class="fas fa-arrow-down" style="font-size:0.75rem;"></i>
+          </a>
+        </div>
+
+        <div class="scroll-hint">
+          <i class="fas fa-chevron-down"></i> Scroll to explore
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────
+         ABOUT
+    ────────────────────────────────────────── -->
+    <div class="section-divider"></div>
+    <section id="about">
+
+      <div class="about-img-wrap reveal">
+        <img id="about-bg-img"
+          src="https://pbs.twimg.com/media/Gdj17DCWsAAV1Bc?format=jpg&name=large"
+          alt="DarkSalxm art">
+        <div class="about-img-label">art · darksalxm</div>
+      </div>
+
+      <div class="about-text">
+        <div class="section-label reveal">
+          <div class="line"></div>
+          <span>About</span>
+        </div>
+        <h2 class="section-title reveal">The Fake<br>VTuber</h2>
+        <p class="section-sub reveal reveal-delay-1">
+          Somewhere between a VTuber and just a guy streaming —
+          DarkSalxm exists in the space where nothing is taken too
+          seriously and everything is worth playing.
+        </p>
+
+        <div class="lore-card reveal reveal-delay-2">
+          <div class="lore-head">// LORE FILE · CLASSIFIED</div>
+          <p>
+            Origin: Unknown. Model status: "Fake." The entity known as DarkSalxm
+            appeared online one day and simply refused to leave. Streams games,
+            talks too much, somehow builds a community anyway. The "Fake" in
+            Fake VTuber isn't an insult — it's a whole vibe.
+          </p>
+        </div>
+
+        <div class="about-stats reveal reveal-delay-3">
+          <div class="stat-box">
+            <div class="sv">∞</div>
+            <div class="sl">Hours of Chaos</div>
+          </div>
+          <div class="stat-box">
+            <div class="sv">0</div>
+            <div class="sl">Scripts Written</div>
+          </div>
+          <div class="stat-box">
+            <div class="sv">6+</div>
+            <div class="sl">Platforms Active</div>
+          </div>
+          <div class="stat-box">
+            <div class="sv">1</div>
+            <div class="sl">Fake VTuber</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ──────────────────────────────────────────
+         SCHEDULE
+    ────────────────────────────────────────── -->
+    <div class="section-divider"></div>
+    <section id="schedule">
+
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>Schedule</span>
+      </div>
+      <h2 class="section-title reveal">When to<br>Catch Me</h2>
+      <p class="section-sub reveal reveal-delay-1">
+        Times are approximate CST. Surprise streams happen —
+        follow on Twitch to never miss one.
+      </p>
+
+      <div class="schedule-grid reveal reveal-delay-2">
+        <div class="day-card">
+          <div class="day-name">Sun</div>
+          <div class="day-icon">😴</div>
+          <div class="off-label">Rest day</div>
+        </div>
+        <div class="day-card">
+          <div class="day-name">Mon</div>
+          <div class="day-icon">😴</div>
+          <div class="off-label">Rest day</div>
+        </div>
+        <div class="day-card stream-day">
+          <div class="day-name">Tue</div>
+          <div class="day-icon">🎮</div>
+          <div class="day-content">Variety<br>7–11 PM</div>
+        </div>
+        <div class="day-card">
+          <div class="day-name">Wed</div>
+          <div class="day-icon">😴</div>
+          <div class="off-label">Rest day</div>
+        </div>
+        <div class="day-card stream-day">
+          <div class="day-name">Thu</div>
+          <div class="day-icon">💬</div>
+          <div class="day-content">Just Chat<br>7–11 PM</div>
+        </div>
+        <div class="day-card">
+          <div class="day-name">Fri</div>
+          <div class="day-icon">⚡</div>
+          <div class="day-content">Surprise<br>Maybe?</div>
+        </div>
+        <div class="day-card stream-day">
+          <div class="day-name">Sat</div>
+          <div class="day-icon">🔥</div>
+          <div class="day-content">Special<br>7–11 PM</div>
+        </div>
+      </div>
+
+      <div class="schedule-note reveal">
+        <i class="fas fa-info-circle"></i>
+        Schedule may shift — always check Twitter or Discord for updates
+      </div>
+
+    </section>
+
+    <!-- ──────────────────────────────────────────
+         WATCH / STREAM
+    ────────────────────────────────────────── -->
+    <div class="section-divider"></div>
+    <section id="stream">
+
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>Watch</span>
+      </div>
+      <h2 class="section-title reveal">Live &amp; Clips</h2>
+      <p class="section-sub reveal reveal-delay-1">
+        Watch the stream right here, or browse recent highlights below.
+      </p>
+
+      <div class="stream-layout">
+
+        <div class="twitch-embed-wrap reveal">
+          <div class="embed-offline-overlay" id="stream-offline-msg">
+            <i class="fab fa-twitch"></i>
+            <p>Stream is currently offline</p>
+            <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener">
+              Follow on Twitch
+            </a>
+          </div>
+          <!-- src injected by script.js only when live -->
+          <iframe id="twitch-player"
+            frameborder="0"
+            allowfullscreen
+            style="display:none;"
+            title="DarkSalxm Twitch Stream">
+          </iframe>
+        </div>
+
+        <div class="clips-col reveal reveal-delay-2">
+          <div class="clips-col-header">Recent Clips &amp; VODs</div>
+
+          <a href="https://twitch.tv/Darksalxm/videos" target="_blank" rel="noopener" class="clip-card">
+            <div class="clip-thumb"><i class="fas fa-play"></i></div>
+            <div class="clip-info">
+              <div class="clip-title">Best Moments This Week</div>
+              <div class="clip-meta">Twitch · Highlights</div>
             </div>
+          </a>
+
+          <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener" class="clip-card">
+            <div class="clip-thumb"><i class="fab fa-tiktok"></i></div>
+            <div class="clip-info">
+              <div class="clip-title">Clips &amp; Shorts</div>
+              <div class="clip-meta">TikTok · @salxmvt</div>
+            </div>
+          </a>
+
+          <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener" class="clip-card">
+            <div class="clip-thumb"><i class="fab fa-youtube"></i></div>
+            <div class="clip-info">
+              <div class="clip-title">Full VODs</div>
+              <div class="clip-meta">YouTube · @darksalxm</div>
+            </div>
+          </a>
+
+          <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" class="clip-card">
+            <div class="clip-thumb" style="color:var(--twitch);"><i class="fab fa-twitch"></i></div>
+            <div class="clip-info">
+              <div class="clip-title">Watch Live on Twitch</div>
+              <div class="clip-meta">Twitch · Darksalxm</div>
+            </div>
+          </a>
         </div>
+
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────
+         PLATFORMS / SOCIALS
+    ────────────────────────────────────────── -->
+    <div class="section-divider"></div>
+    <section id="platforms">
+
+      <div class="section-label reveal">
+        <div class="line"></div>
+        <span>Socials</span>
+      </div>
+      <h2 class="section-title reveal">Find Me<br>Everywhere</h2>
+      <p class="section-sub reveal reveal-delay-1">Follow across platforms to stay connected.</p>
+
+      <div class="platforms-grid">
+
+        <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener"
+           class="platform-card twitch featured reveal reveal-delay-1">
+          <div class="platform-icon"><i class="fab fa-twitch"></i></div>
+          <div>
+            <div class="platform-name">Twitch</div>
+            <div class="platform-handle">/Darksalxm</div>
+          </div>
+          <span class="platform-badge">MAIN PLATFORM</span>
+        </a>
+
+        <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener"
+           class="platform-card tiktok reveal reveal-delay-1">
+          <div class="platform-icon"><i class="fab fa-tiktok"></i></div>
+          <div>
+            <div class="platform-name">TikTok</div>
+            <div class="platform-handle">@salxmvt</div>
+          </div>
+          <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="https://x.com/Darksalxm" target="_blank" rel="noopener"
+           class="platform-card twitter reveal reveal-delay-2">
+          <div class="platform-icon"><i class="fab fa-x-twitter"></i></div>
+          <div>
+            <div class="platform-name">Twitter / X</div>
+            <div class="platform-handle">@Darksalxm</div>
+          </div>
+          <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener"
+           class="platform-card youtube reveal reveal-delay-2">
+          <div class="platform-icon"><i class="fab fa-youtube"></i></div>
+          <div>
+            <div class="platform-name">YouTube</div>
+            <div class="platform-handle">@darksalxm</div>
+          </div>
+          <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener"
+           class="platform-card discord reveal reveal-delay-3">
+          <div class="platform-icon"><i class="fab fa-discord"></i></div>
+          <div>
+            <div class="platform-name">Discord</div>
+            <div class="platform-handle">Community Server</div>
+          </div>
+          <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
+        <a href="https://throne.com/darksalxm" target="_blank" rel="noopener"
+           class="platform-card throne reveal reveal-delay-3">
+          <div class="platform-icon"><i class="fas fa-crown"></i></div>
+          <div>
+            <div class="platform-name">Throne</div>
+            <div class="platform-handle">Wishlist &amp; Support</div>
+          </div>
+          <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ──────────────────────────────────────────
+         SUPPORT
+    ────────────────────────────────────────── -->
+    <div class="section-divider"></div>
+    <section id="support">
+
+      <div>
+        <div class="section-label reveal">
+          <div class="line"></div>
+          <span>Support</span>
+        </div>
+        <h2 class="section-title reveal">Show Some<br>Love</h2>
+        <p class="section-sub reveal reveal-delay-1">
+          Supporting the stream keeps the chaos going. Every bit helps.
+        </p>
+      </div>
+
+      <div class="support-cards">
+        <div class="support-card throne-card reveal reveal-delay-1">
+          <div class="card-icon"><i class="fas fa-crown"></i></div>
+          <h3>Throne Wishlist</h3>
+          <p>Send a gift from the wishlist — it shows up on stream and goes directly toward improving setup and content.</p>
+          <a href="https://throne.com/darksalxm" target="_blank" rel="noopener" class="btn-throne">
+            <i class="fas fa-crown"></i> View Wishlist
+          </a>
+        </div>
+        <div class="support-card discord-card reveal reveal-delay-2">
+          <div class="card-icon"><i class="fab fa-discord"></i></div>
+          <h3>Join the Discord</h3>
+          <p>The community lives in Discord — stream alerts, clips, polls, and general chaos. Come hang out between streams too.</p>
+          <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener" class="btn-discord">
+            <i class="fab fa-discord"></i> Join Server
+          </a>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ──────────────────────────────────────────
+         CONTACT STRIP
+    ────────────────────────────────────────── -->
+    <div class="contact-strip reveal">
+      <div class="contact-left">
+        <i class="fas fa-envelope"></i>
+        <div>
+          <div class="contact-label">Sponsorships &amp; Collabs</div>
+          <div class="contact-value" id="contact-email">contact@salxm.com</div>
+        </div>
+      </div>
+      <div class="contact-tag">// FOR BUSINESS INQUIRIES ONLY</div>
     </div>
 
-    <!-- Timer Pop-up -->
-    <div id="timerPopup" class="hidden fixed inset-0 flex items-center justify-center bg-black/70 z-50">
-        <div class="bg-white/20 backdrop-blur-md border-none text-white rounded-lg p-6 sm:p-8 max-w-lg text-center">
-            <h2 class="text-xl font-bold mb-4">Hey really quick, come say hi to me live!</h2>
-            <p class="text-sm sm:text-base mb-4">Catch me live on Twitch right now!</p>
-            <!-- Twitch Embed -->
-            <div class="relative w-full h-64 sm:h-72">
-                <iframe
-                    src="https://player.twitch.tv/?channel=darksalxm&parent=salxm.com"
-                    height="100%"
-                    width="100%"
-                    frameborder="0"
-                    allowfullscreen>
-                </iframe>
-            </div>
-            <button onclick="closePopup()" class="mt-4 py-2 px-4 bg-red-500 hover:bg-red-600 text-white rounded-md">Close</button>
+    <!-- ──────────────────────────────────────────
+         FOOTER
+    ────────────────────────────────────────── -->
+    <footer>
+      <div class="f-logo">Dark<span>/</span>Salxm</div>
+      <div class="f-copy">© 2025 DARKSALXM · THE FAKE VTUBER · ALL RIGHTS RESERVED</div>
+    </footer>
+
+  </div><!-- /.page -->
+
+  <!-- ════════════════════════════════════════════
+       LIVE POPUP
+  ════════════════════════════════════════════ -->
+  <div id="live-popup" role="dialog" aria-modal="true" aria-label="DarkSalxm is live">
+    <div class="popup-box">
+
+      <div class="popup-header">
+        <div class="popup-header-left">
+          <div class="popup-live-badge">
+            <span class="dot"></span> LIVE NOW
+          </div>
+          <div class="popup-title">DarkSalxm is streaming!</div>
         </div>
+        <button class="popup-close" id="popup-close-btn" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="popup-embed">
+        <!-- src injected by script.js when live -->
+        <iframe id="popup-twitch-iframe"
+          frameborder="0"
+          allowfullscreen
+          title="DarkSalxm Live Stream">
+        </iframe>
+      </div>
+
+      <div class="popup-footer">
+        <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener"
+           class="popup-btn-twitch">
+          <i class="fab fa-twitch"></i> Open in Twitch
+        </a>
+        <button class="popup-btn-close" id="popup-dismiss-btn">Dismiss</button>
+      </div>
+
     </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCRIPTS — loaded at end of body for performance
+  ════════════════════════════════════════════ -->
+  <script src="script.js"></script>
+
 </body>
 </html>
