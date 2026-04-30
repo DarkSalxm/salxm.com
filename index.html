@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
 
-  <!-- ═══ GOOGLE ANALYTICS ═══ -->
+  <!-- ═══ ANALYTICS ═══ -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-S2J43CMT6B"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
+    window.dataLayer=window.dataLayer||[];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-S2J43CMT6B');
+    gtag('js',new Date()); gtag('config','G-S2J43CMT6B');
   </script>
 
   <!-- ═══ META ═══ -->
@@ -17,45 +16,37 @@
   <meta name="description" content="DarkSalxm — The Fake VTuber. Streaming chaos, games, and vibes you won't find anywhere else.">
   <meta name="author" content="DarkSalxm">
   <meta name="keywords" content="DarkSalxm, Vtuber, Twitch, Streaming, Fake Vtuber">
-
-  <meta property="og:title"       content="DarkSalxm — The Fake VTuber">
   <meta property="og:description" content="Streaming chaos, games, and vibes you won't find anywhere else.">
   <meta property="og:image"       content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
   <meta property="og:url"         content="https://salxm.com">
   <meta property="og:type"        content="website">
-
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:site"        content="@Darksalxm">
   <meta name="twitter:title"       content="DarkSalxm — The Fake VTuber">
   <meta name="twitter:description" content="Streaming chaos, games, and vibes you won't find anywhere else.">
   <meta name="twitter:image"       content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
-
   <title>DarkSalxm — The Fake VTuber</title>
 
-  <!-- ═══ FONTS — preconnect first, then load ═══ -->
+  <!-- ═══ FONTS ═══ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- ═══ ICONS — defer non-critical CSS with media trick ═══ -->
+  <!-- Icons — deferred for performance -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
 
-  <!-- ═══ STYLESHEET ═══ -->
   <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
 
-  <!-- Background layers -->
+  <!-- Bg layers -->
   <div id="bg-art"></div>
   <div id="scanlines"></div>
   <div class="glow-blob red"></div>
   <div class="glow-blob green"></div>
 
-  <!-- ════════════════════════════════
-       NAV
-  ════════════════════════════════ -->
+  <!-- ════ NAV ════ -->
   <nav>
     <a href="#" class="nav-logo">Dark<span class="slash">/</span>Salxm</a>
     <ul class="nav-links">
@@ -71,15 +62,11 @@
     </a>
   </nav>
 
-  <!-- ════════════════════════════════
-       PAGE
-  ════════════════════════════════ -->
+  <!-- ════ PAGE ════ -->
   <div class="page">
 
     <!-- ── HERO ── -->
     <section id="hero">
-
-      <!-- Left: text content -->
       <div class="hero-content">
 
         <div class="hero-eyebrow">
@@ -101,7 +88,9 @@
         <h1 class="hero-name">
           <span class="glitch-wrap" data-text="DARK">DARK</span><span class="accent-word">SALXM</span>
         </h1>
-        <div class="hero-tagline">// THE FAKE VTUBER</div>
+
+        <!-- Typewriter — JS fills this in -->
+        <div class="hero-tagline" id="hero-tagline"></div>
 
         <p class="hero-bio">
           I'm <strong>DarkSalxm</strong> — a self-proclaimed Fake VTuber who streams the unexpected.
@@ -118,14 +107,13 @@
           </a>
         </div>
 
-        <!-- FIXED: scroll hint is now BELOW the buttons, inside a pill so it's always readable -->
         <div class="scroll-hint">
           <i class="fas fa-chevron-down"></i> Scroll to explore
         </div>
 
-      </div><!-- /.hero-content -->
+      </div>
 
-      <!-- Right: art frame -->
+      <!-- Right art panel -->
       <div class="hero-visual">
         <div class="hero-art-frame">
           <img id="hero-art-img"
@@ -138,8 +126,41 @@
           </div>
         </div>
       </div>
+    </section>
 
-    </section><!-- /#hero -->
+    <!-- ════ MARQUEE STRIP — scrolling platform links ════ -->
+    <div class="marquee-section">
+      <div class="marquee-track" id="marquee-track">
+        <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" class="marquee-item twitch-item">
+          <i class="fab fa-twitch"></i> WATCH ON TWITCH
+        </a>
+        <span class="marquee-sep">✦</span>
+        <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener" class="marquee-item tiktok-item">
+          <i class="fab fa-tiktok"></i> CLIPS ON TIKTOK
+        </a>
+        <span class="marquee-sep">✦</span>
+        <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener" class="marquee-item discord-item">
+          <i class="fab fa-discord"></i> JOIN THE DISCORD
+        </a>
+        <span class="marquee-sep">✦</span>
+        <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener" class="marquee-item yt-item">
+          <i class="fab fa-youtube"></i> VODS ON YOUTUBE
+        </a>
+        <span class="marquee-sep">✦</span>
+        <a href="https://x.com/Darksalxm" target="_blank" rel="noopener" class="marquee-item">
+          <i class="fab fa-x-twitter"></i> FOLLOW ON X
+        </a>
+        <span class="marquee-sep">✦</span>
+        <a href="https://throne.com/darksalxm" target="_blank" rel="noopener" class="marquee-item" style="color:var(--throne);">
+          <i class="fas fa-crown"></i> WISHLIST ON THRONE
+        </a>
+        <span class="marquee-sep">✦</span>
+        <span class="marquee-item">THE FAKE VTUBER</span>
+        <span class="marquee-sep">✦</span>
+        <span class="marquee-item">CHAOS IS THE CONTENT</span>
+        <span class="marquee-sep">✦</span>
+      </div>
+    </div>
 
     <!-- ── ABOUT ── -->
     <div class="section-divider"></div>
@@ -157,8 +178,8 @@
         <h2 class="section-title reveal">The Fake<br>VTuber</h2>
         <p class="section-sub reveal reveal-delay-1">
           Somewhere between a VTuber and just a guy streaming —
-          DarkSalxm exists in the space where nothing is taken too seriously
-          and everything is worth playing.
+          DarkSalxm exists in the space where nothing is taken too
+          seriously and everything is worth playing.
         </p>
 
         <div class="lore-card reveal reveal-delay-2">
@@ -171,11 +192,24 @@
           </p>
         </div>
 
+        <!-- data-count triggers animated counter on scroll -->
         <div class="about-stats reveal reveal-delay-3">
-          <div class="stat-box"><div class="sv">∞</div><div class="sl">Hours of Chaos</div></div>
-          <div class="stat-box"><div class="sv">0</div><div class="sl">Scripts Written</div></div>
-          <div class="stat-box"><div class="sv">6+</div><div class="sl">Platforms Active</div></div>
-          <div class="stat-box"><div class="sv">1</div><div class="sl">Fake VTuber</div></div>
+          <div class="stat-box">
+            <div class="sv">∞</div>
+            <div class="sl">Hours of Chaos</div>
+          </div>
+          <div class="stat-box">
+            <div class="sv" data-count="0">0</div>
+            <div class="sl">Scripts Written</div>
+          </div>
+          <div class="stat-box">
+            <div class="sv" data-count="6" data-suffix="+">6+</div>
+            <div class="sl">Platforms Active</div>
+          </div>
+          <div class="stat-box">
+            <div class="sv" data-count="1">1</div>
+            <div class="sl">Fake VTuber</div>
+          </div>
         </div>
       </div>
 
@@ -188,37 +222,31 @@
       <div class="section-label reveal"><div class="line"></div><span>Schedule</span></div>
       <h2 class="section-title reveal">When to<br>Catch Me</h2>
       <p class="section-sub reveal reveal-delay-1">
-        Times are approximate CST. Surprise streams happen —
-        follow on Twitch to never miss one.
+        Live every Tue · Wed · Thu · Fri · Sun — 7 to 11 PM CST.
+        Fridays are Community Night. You pick the game.
       </p>
 
-      <div class="schedule-grid reveal reveal-delay-2">
-        <div class="day-card">
-          <div class="day-name">Sun</div><div class="day-icon">😴</div><div class="off-label">Rest day</div>
-        </div>
-        <div class="day-card">
-          <div class="day-name">Mon</div><div class="day-icon">😴</div><div class="off-label">Rest day</div>
-        </div>
-        <div class="day-card stream-day">
-          <div class="day-name">Tue</div><div class="day-icon">🎮</div><div class="day-content">Variety<br>7–11 PM</div>
-        </div>
-        <div class="day-card">
-          <div class="day-name">Wed</div><div class="day-icon">😴</div><div class="off-label">Rest day</div>
-        </div>
-        <div class="day-card stream-day">
-          <div class="day-name">Thu</div><div class="day-icon">💬</div><div class="day-content">Just Chat<br>7–11 PM</div>
-        </div>
-        <div class="day-card">
-          <div class="day-name">Fri</div><div class="day-icon">⚡</div><div class="day-content">Surprise<br>Maybe?</div>
-        </div>
-        <div class="day-card stream-day">
-          <div class="day-name">Sat</div><div class="day-icon">🔥</div><div class="day-content">Special<br>7–11 PM</div>
-        </div>
-      </div>
+      <!--
+        TODAY'S CARD — rendered by script.js from SCHEDULE data in script.js
+        Hidden automatically on rest days
+      -->
+      <div id="schedule-today-card" class="today-card hidden reveal reveal-delay-1"></div>
+
+      <!--
+        SCHEDULE GRID — rendered by script.js
+        To update game/note for any day: edit the SCHEDULE array at the top of script.js
+      -->
+      <div id="schedule-grid" class="schedule-grid reveal reveal-delay-2"></div>
 
       <div class="schedule-note reveal">
         <i class="fas fa-info-circle"></i>
-        Schedule may shift — always check Twitter or Discord for updates
+        Schedule may shift — always check Twitter or Discord for real-time updates
+      </div>
+
+      <!-- How-to-update hint for yourself -->
+      <div class="schedule-edit-hint reveal">
+        <i class="fas fa-pencil-alt"></i>
+        To update game or note: open <code>script.js</code> → edit the <code>SCHEDULE</code> array at the top → push to GitHub. Done.
       </div>
 
     </section>
@@ -230,13 +258,12 @@
       <div class="section-label reveal"><div class="line"></div><span>Watch</span></div>
       <h2 class="section-title reveal">Live &amp; Videos</h2>
       <p class="section-sub reveal reveal-delay-1">
-        Streaming live on Twitch — or catch the latest video below when offline.
-        Auto-switches so you always see something.
+        Streaming live on Twitch during stream hours.
+        When offline, the latest YouTube video loads automatically.
       </p>
 
       <div class="stream-full">
 
-        <!-- Status bar: shows live/offline label + external link -->
         <div class="embed-status-bar reveal">
           <div class="embed-status-indicator">
             <div class="embed-dot offline" id="embed-status-dot"></div>
@@ -246,10 +273,9 @@
              class="embed-open-link" id="embed-open-link">OPEN ↗</a>
         </div>
 
-        <!-- Smart embed — Twitch when live, YouTube when offline -->
+        <!-- Smart embed — Twitch live / YouTube offline — injected by script.js -->
         <div class="stream-embed-wrap reveal reveal-delay-1">
-          <div id="stream-embed-container" class="stream-embed-wrap" style="position:relative; border:none;">
-            <!-- injected by script.js -->
+          <div id="stream-embed-container" style="position:absolute;inset:0;">
             <div class="embed-loading">
               <div class="spin-ring"></div>
               <p>LOADING…</p>
@@ -257,7 +283,6 @@
           </div>
         </div>
 
-        <!-- Quick-access cards below embed -->
         <div class="stream-below reveal reveal-delay-2">
           <a href="https://twitch.tv/Darksalxm/videos" target="_blank" rel="noopener" class="stream-card">
             <div class="stream-card-icon"><i class="fab fa-twitch"></i></div>
@@ -282,7 +307,7 @@
           </a>
         </div>
 
-      </div><!-- /.stream-full -->
+      </div>
     </section>
 
     <!-- ── PLATFORMS ── -->
@@ -294,45 +319,36 @@
       <p class="section-sub reveal reveal-delay-1">Follow across platforms to stay connected.</p>
 
       <div class="platforms-grid">
-        <!-- Twitch — featured / primary -->
         <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener"
            class="platform-card twitch featured reveal reveal-delay-1">
           <div class="platform-icon"><i class="fab fa-twitch"></i></div>
-          <div>
-            <div class="platform-name">Twitch</div>
-            <div class="platform-handle">/Darksalxm</div>
-          </div>
+          <div><div class="platform-name">Twitch</div><div class="platform-handle">/Darksalxm</div></div>
           <span class="platform-badge">MAIN PLATFORM</span>
         </a>
-
         <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener"
            class="platform-card tiktok reveal reveal-delay-1">
           <div class="platform-icon"><i class="fab fa-tiktok"></i></div>
           <div><div class="platform-name">TikTok</div><div class="platform-handle">@salxmvt</div></div>
           <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
         </a>
-
         <a href="https://x.com/Darksalxm" target="_blank" rel="noopener"
            class="platform-card twitter reveal reveal-delay-2">
           <div class="platform-icon"><i class="fab fa-x-twitter"></i></div>
           <div><div class="platform-name">Twitter / X</div><div class="platform-handle">@Darksalxm</div></div>
           <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
         </a>
-
         <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener"
            class="platform-card youtube reveal reveal-delay-2">
           <div class="platform-icon"><i class="fab fa-youtube"></i></div>
           <div><div class="platform-name">YouTube</div><div class="platform-handle">@darksalxm</div></div>
           <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
         </a>
-
         <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener"
            class="platform-card discord reveal reveal-delay-3">
           <div class="platform-icon"><i class="fab fa-discord"></i></div>
           <div><div class="platform-name">Discord</div><div class="platform-handle">Community Server</div></div>
           <div class="platform-arrow"><i class="fas fa-arrow-right"></i></div>
         </a>
-
         <a href="https://throne.com/darksalxm" target="_blank" rel="noopener"
            class="platform-card throne reveal reveal-delay-3">
           <div class="platform-icon"><i class="fas fa-crown"></i></div>
@@ -346,13 +362,11 @@
     <!-- ── SUPPORT ── -->
     <div class="section-divider"></div>
     <section id="support">
-
       <div>
         <div class="section-label reveal"><div class="line"></div><span>Support</span></div>
         <h2 class="section-title reveal">Show Some<br>Love</h2>
         <p class="section-sub reveal reveal-delay-1">Supporting the stream keeps the chaos going. Every bit helps.</p>
       </div>
-
       <div class="support-cards">
         <div class="support-card throne-card reveal reveal-delay-1">
           <div class="card-icon"><i class="fas fa-crown"></i></div>
@@ -371,7 +385,6 @@
           </a>
         </div>
       </div>
-
     </section>
 
     <!-- ── CONTACT STRIP ── -->
@@ -380,7 +393,7 @@
         <i class="fas fa-envelope"></i>
         <div>
           <div class="contact-label">Sponsorships &amp; Collabs</div>
-          <div class="contact-value" id="contact-email">contact@salxm.com</div>
+          <div class="contact-value" id="contact-email">Darksalxm@gmail.com</div>
         </div>
       </div>
       <div class="contact-tag">// FOR BUSINESS INQUIRIES ONLY</div>
@@ -389,14 +402,12 @@
     <!-- ── FOOTER ── -->
     <footer>
       <div class="f-logo">Dark<span>/</span>Salxm</div>
-      <div class="f-copy">© 2025 DARKSALXM · THE FAKE VTUBER · ALL RIGHTS RESERVED</div>
+      <div class="f-copy">© 2026 DARKSALXM · THE FAKE VTUBER · ALL RIGHTS RESERVED</div>
     </footer>
 
   </div><!-- /.page -->
 
-  <!-- ════════════════════════════════
-       LIVE POPUP
-  ════════════════════════════════ -->
+  <!-- ════ LIVE POPUP ════ -->
   <div id="live-popup" role="dialog" aria-modal="true" aria-label="DarkSalxm is live">
     <div class="popup-box">
       <div class="popup-header">
@@ -420,10 +431,6 @@
     </div>
   </div>
 
-  <!-- ════════════════════════════════
-       SCRIPT — end of body for speed
-  ════════════════════════════════ -->
   <script src="script.js"></script>
-
 </body>
 </html>

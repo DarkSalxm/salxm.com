@@ -1,34 +1,39 @@
 /* ============================================================
-   DARKSALXM — script.js  (v3)
-   Smart embed: Twitch when live · YouTube when offline
+   DARKSALXM — script.js  (v4)
    ============================================================ */
-
 'use strict';
 
 /* ─────────────────────────────────────────────────────────────
-   CONFIG — update these whenever anything changes
+   ████  SCHEDULE DATA  ████
+   Edit this to update your schedule ANY time — no HTML needed.
+   Just change the game, note, or active flag here and push.
+───────────────────────────────────────────────────────────── */
+const SCHEDULE = [
+  { day: 'Sun',  fullDay: 'Sunday',    stream: true,  icon: '🎮', time: '7–11 PM',  game: 'Variety',         note: 'Chill vibes to end the week' },
+  { day: 'Mon',  fullDay: 'Monday',    stream: false, icon: '😴', time: '',          game: '',                note: 'Rest day' },
+  { day: 'Tue',  fullDay: 'Tuesday',   stream: true,  icon: '🎮', time: '7–11 PM',  game: 'Variety',         note: 'Anything goes — come find out' },
+  { day: 'Wed',  fullDay: 'Wednesday', stream: true,  icon: '🕹️', time: '7–11 PM',  game: 'Variety',         note: 'Mid-week energy check' },
+  { day: 'Thu',  fullDay: 'Thursday',  stream: true,  icon: '💬', time: '7–11 PM',  game: 'Just Chatting',   note: 'Talk to me. I dare you.' },
+  { day: 'Fri',  fullDay: 'Friday',    stream: true,  icon: '👾', time: '7–11 PM',  game: 'Community Night', note: 'YOU pick the game. Bring chaos.' },
+  { day: 'Sat',  fullDay: 'Saturday',  stream: false, icon: '😴', time: '',          game: '',                note: 'Rest day' },
+];
+
+/* ─────────────────────────────────────────────────────────────
+   ████  CONFIG  ████
 ───────────────────────────────────────────────────────────── */
 const CONFIG = {
   twitch: {
     channel:    'darksalxm',
-    parent:     'salxm.com',       // must match domain exactly
-    streamDays: [2, 4, 6],         // 0=Sun 1=Mon 2=Tue 3=Wed 4=Thu 5=Fri 6=Sat
-    startHour:  19,                // 7 PM CST
-    endHour:    23,                // 11 PM CST
+    parent:     'salxm.com',
     timezone:   'America/Chicago',
+    startHour:  19,   // 7 PM CST
+    endHour:    23,   // 11 PM CST
   },
 
   youtube: {
-    channelId:  'UCtZV0M-C3hTmMBbbb3X-MhQ',       // ← replace with your real YouTube channel ID
-    // Fallback embed if API key not set — just embeds the channel's latest uploads playlist
-    // Get your channel ID from: youtube.com > your channel > About > Share > Copy channel ID
-    latestVideoId: '',               // leave blank — auto-fetched at runtime when possible
-    // Optional: YouTube Data API v3 key for fetching latest video automatically
-    // Leave blank to use the channel page embed fallback instead
-    apiKey: 'UUtZV0M-C3hTmMBbbb3X-MhQ',
-    // Fallback playlist URL — embeds channel's "Uploads" playlist
-    // Replace UCxxxxx with your channel ID (replace UC with UU)
-    uploadsPlaylistId: '', // ← replace UC with UU in your channel ID
+    channelId:        'UCtZV0M-C3hTmMBbbb3X-MhQ',
+    uploadsPlaylistId:'UUtZV0M-C3hTmMBbbb3X-MhQ', // UC → UU
+    apiKey:           '',   // optional — leave blank, playlist works fine
   },
 
   backgroundImages: [
@@ -41,226 +46,312 @@ const CONFIG = {
     'https://pbs.twimg.com/media/GZYPn-VXYAAFhRy?format=jpg&name=large',
   ],
 
-  popupDelay:          2800,   // ms before live popup appears
-  navScrollThreshold:  30,
+  // Phrases that cycle in the hero tagline typewriter
+  typingPhrases: [
+    '// THE FAKE VTUBER',
+    '// NOT YOUR AVERAGE STREAMER',
+    '// CHAOS IS THE CONTENT',
+    '// VIEWER COUNT: DOESN\'T MATTER',
+    '// SCRIPT.EXE NOT FOUND',
+  ],
+
+  popupDelay:         2800,
+  navScrollThreshold: 30,
 };
 
 /* ─────────────────────────────────────────────────────────────
    UTILS
 ───────────────────────────────────────────────────────────── */
-const $ = (sel, ctx = document) => ctx.querySelector(sel);
-const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+const $  = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
 
 function getNowCST() {
   return new Date(new Date().toLocaleString('en-US', { timeZone: CONFIG.twitch.timezone }));
 }
-
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
-}
+function getParam(n) { return new URLSearchParams(location.search).get(n); }
 
 /* ─────────────────────────────────────────────────────────────
-   LIVE DETECTION
-   - URL param ?live=1 forces live state (for testing)
-   - URL param ?live=0 forces offline state (for testing)
-   - Otherwise: checks day-of-week + hour in CST
+   LIVE DETECTION  (?live=1 to force on, ?live=0 to force off)
 ───────────────────────────────────────────────────────────── */
 function isStreamLive() {
-  const override = getParam('live');
-  if (override === '1') return true;
-  if (override === '0') return false;
-
+  const ov = getParam('live');
+  if (ov === '1') return true;
+  if (ov === '0') return false;
   const now  = getNowCST();
-  const day  = now.getDay();
-  const hour = now.getHours();
-  return CONFIG.twitch.streamDays.includes(day)
-    && hour >= CONFIG.twitch.startHour
-    && hour < CONFIG.twitch.endHour;
+  const sched = SCHEDULE[now.getDay()];
+  return sched.stream && now.getHours() >= CONFIG.twitch.startHour && now.getHours() < CONFIG.twitch.endHour;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   SMART EMBED
-   LIVE  → Twitch player (muted autoplay)
-   OFFLINE → YouTube latest video or uploads playlist
+   SCHEDULE — render from data + highlight today
 ───────────────────────────────────────────────────────────── */
+function renderSchedule() {
+  const grid = $('#schedule-grid');
+  if (!grid) return;
+  const todayIdx = new Date().getDay();
 
-/** Build Twitch embed URL */
-function twitchEmbedURL() {
+  grid.innerHTML = SCHEDULE.map((s, i) => {
+    const isToday  = i === todayIdx;
+    const classes  = ['day-card', s.stream ? 'stream-day' : '', isToday ? 'today' : ''].filter(Boolean).join(' ');
+    return `
+      <div class="${classes}">
+        <div class="day-name">${s.day}</div>
+        <div class="day-icon">${s.icon}</div>
+        ${s.stream
+          ? `<div class="day-game">${s.game}</div>
+             <div class="day-time">${s.time}</div>`
+          : `<div class="off-label">${s.note}</div>`
+        }
+        ${isToday && s.stream ? `<div class="today-badge">TODAY</div>` : ''}
+      </div>`;
+  }).join('');
+
+  // Active day expanded card
+  const todaySched = SCHEDULE[todayIdx];
+  const expanded = $('#schedule-today-card');
+  if (expanded) {
+    if (todaySched.stream) {
+      expanded.innerHTML = `
+        <div class="today-card-inner">
+          <div class="tc-icon">${todaySched.icon}</div>
+          <div class="tc-info">
+            <div class="tc-label">// STREAMING TODAY</div>
+            <div class="tc-game">${todaySched.game}</div>
+            <div class="tc-note">${todaySched.note}</div>
+          </div>
+          <div class="tc-time">${todaySched.time}<span>CST</span></div>
+        </div>`;
+      expanded.classList.remove('hidden');
+    } else {
+      expanded.classList.add('hidden');
+    }
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SMART EMBED — Twitch live · YouTube offline
+───────────────────────────────────────────────────────────── */
+function twitchURL() {
   return `https://player.twitch.tv/?channel=${CONFIG.twitch.channel}&parent=${CONFIG.twitch.parent}&muted=true&autoplay=true`;
 }
-
-/**
- * Build YouTube embed URL.
- * Priority:
- *   1. If a specific video ID was fetched → embed that video
- *   2. If uploads playlist ID is set → embed playlist (shows latest)
- *   3. Fallback: embed channel search page
- */
-function youtubeEmbedURL(videoId = '') {
-  if (videoId) {
-    return `https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0&modestbranding=1`;
-  }
-  if (CONFIG.youtube.uploadsPlaylistId) {
-    return `https://www.youtube.com/embed?listType=playlist&list=${CONFIG.youtube.uploadsPlaylistId}&autoplay=0&rel=0&modestbranding=1`;
-  }
-  // Hard fallback — channel page
-  return `https://www.youtube.com/embed?listType=user_uploads&list=darksalxm&rel=0`;
+function youtubeURL(videoId = '') {
+  if (videoId) return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`;
+  return `https://www.youtube.com/embed?listType=playlist&list=${CONFIG.youtube.uploadsPlaylistId}&rel=0&modestbranding=1`;
 }
 
-/**
- * Try to fetch the latest YouTube video ID via YouTube Data API v3.
- * Only runs if CONFIG.youtube.apiKey is set.
- * Returns a video ID string or empty string.
- */
-async function fetchLatestYouTubeVideoId() {
+async function fetchLatestYTVideo() {
   if (!CONFIG.youtube.apiKey || !CONFIG.youtube.channelId) return '';
   try {
-    const url = `https://www.googleapis.com/youtube/v3/search?key=${CONFIG.youtube.apiKey}&channelId=${CONFIG.youtube.channelId}&part=snippet,id&order=date&maxResults=1&type=video`;
-    const res  = await fetch(url);
-    if (!res.ok) return '';
-    const data = await res.json();
-    return data?.items?.[0]?.id?.videoId ?? '';
-  } catch {
-    return '';
-  }
+    const r = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${CONFIG.youtube.apiKey}&channelId=${CONFIG.youtube.channelId}&part=id&order=date&maxResults=1&type=video`);
+    if (!r.ok) return '';
+    const d = await r.json();
+    return d?.items?.[0]?.id?.videoId ?? '';
+  } catch { return ''; }
 }
 
-/** Inject the correct iframe into #stream-embed-container */
-async function mountSmartEmbed(isLive) {
-  const container   = $('#stream-embed-container');
-  const statusDot   = $('#embed-status-dot');
-  const statusLabel = $('#embed-status-label');
-  const openLink    = $('#embed-open-link');
-  if (!container) return;
+async function mountEmbed(live) {
+  const wrap  = $('#stream-embed-container');
+  const dot   = $('#embed-status-dot');
+  const label = $('#embed-status-label');
+  const link  = $('#embed-open-link');
+  if (!wrap) return;
 
-  // Show loading state
-  container.innerHTML = `
-    <div class="embed-loading">
-      <div class="spin-ring"></div>
-      <p>${isLive ? 'CONNECTING TO STREAM…' : 'LOADING LATEST VIDEO…'}</p>
-    </div>`;
+  wrap.innerHTML = `<div class="embed-loading"><div class="spin-ring"></div><p>${live ? 'CONNECTING TO STREAM…' : 'LOADING LATEST VIDEO…'}</p></div>`;
 
-  let src = '';
-  let labelText  = '';
-  let linkHref   = '';
-  let linkText   = '';
+  let src, labelTxt, href, linkTxt;
 
-  if (isLive) {
-    src       = twitchEmbedURL();
-    labelText = '🔴 LIVE ON TWITCH';
-    linkHref  = `https://twitch.tv/${CONFIG.twitch.channel}`;
-    linkText  = 'OPEN IN TWITCH ↗';
-    if (statusDot)   { statusDot.className = 'embed-dot live'; }
-    if (statusLabel) { statusLabel.textContent = labelText; }
+  if (live) {
+    src      = twitchURL();
+    labelTxt = '🔴  LIVE ON TWITCH';
+    href     = `https://twitch.tv/${CONFIG.twitch.channel}`;
+    linkTxt  = 'OPEN IN TWITCH ↗';
+    if (dot)   dot.className   = 'embed-dot live';
   } else {
-    // Try to get the most recent YouTube video
-    const videoId = await fetchLatestYouTubeVideoId();
-    src       = youtubeEmbedURL(videoId);
-    labelText = 'LATEST VIDEO — YOUTUBE';
-    linkHref  = `https://youtube.com/@darksalxm`;
-    linkText  = 'OPEN CHANNEL ↗';
-    if (statusDot)   { statusDot.className = 'embed-dot offline'; }
-    if (statusLabel) { statusLabel.textContent = labelText; }
+    const vid = await fetchLatestYTVideo();
+    src      = youtubeURL(vid);
+    labelTxt = 'LATEST VIDEO — YOUTUBE';
+    href     = 'https://youtube.com/@darksalxm';
+    linkTxt  = 'OPEN CHANNEL ↗';
+    if (dot)   dot.className   = 'embed-dot offline';
   }
 
-  if (openLink) {
-    openLink.href        = linkHref;
-    openLink.textContent = linkText;
-  }
+  if (label) label.textContent = labelTxt;
+  if (link)  { link.href = href; link.textContent = linkTxt; }
 
-  // Build iframe — replace loading overlay
   const iframe = document.createElement('iframe');
   iframe.src             = src;
   iframe.allowFullscreen = true;
-  iframe.title           = isLive ? 'DarkSalxm Live Stream' : 'DarkSalxm Latest Video';
+  iframe.title           = live ? 'DarkSalxm Live' : 'DarkSalxm Latest Video';
   iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
 
-  iframe.onload = () => {
-    container.innerHTML = '';
-    container.appendChild(iframe);
-  };
-
-  // Safety timeout — show iframe even if onload doesn't fire
-  setTimeout(() => {
-    if (container.querySelector('.embed-loading')) {
-      container.innerHTML = '';
-      container.appendChild(iframe);
-    }
-  }, 4000);
+  const inject = () => { wrap.innerHTML = ''; wrap.appendChild(iframe); };
+  iframe.onload = inject;
+  setTimeout(() => { if (wrap.querySelector('.embed-loading')) inject(); }, 5000);
 }
 
 /* ─────────────────────────────────────────────────────────────
-   APPLY LIVE STATE — updates all UI elements at once
+   APPLY LIVE STATE
 ───────────────────────────────────────────────────────────── */
-function applyLiveState(isLive) {
-  // Nav button
+function applyLiveState(live) {
   const navBtn = $('#nav-live-btn');
-  if (navBtn) navBtn.classList.toggle('offline', !isLive);
+  if (navBtn) navBtn.classList.toggle('offline', !live);
 
-  // Hero avatar dot
-  const avatarStatus = $('#hero-status');
-  if (avatarStatus) avatarStatus.classList.toggle('offline', !isLive);
+  const dot = $('#hero-status');
+  if (dot)  dot.classList.toggle('offline', !live);
 
-  // Hero status text
-  const statusText = $('#live-status-text');
-  if (statusText) {
-    statusText.textContent = isLive ? '● Live Now' : '● Offline';
-    statusText.classList.toggle('live', isLive);
-  }
+  const txt = $('#live-status-text');
+  if (txt)  { txt.textContent = live ? '● Live Now' : '● Offline'; txt.classList.toggle('live', live); }
 
-  // Smart embed
-  mountSmartEmbed(isLive);
+  mountEmbed(live);
+  if (live) setTimeout(openLivePopup, CONFIG.popupDelay);
 
-  // Live popup
-  if (isLive) setTimeout(openLivePopup, CONFIG.popupDelay);
-
-  // Console badge
   console.log(
-    `%c DarkSalxm %c ${isLive ? '🔴 LIVE' : '⚫ OFFLINE'} `,
+    `%c DarkSalxm %c ${live ? '🔴 LIVE' : '⚫ OFFLINE'} `,
     'background:#08100a;color:#c0281e;font-weight:bold;padding:4px 8px;border-radius:4px 0 0 4px;',
-    isLive
-      ? 'background:#c0281e;color:#fff;font-weight:bold;padding:4px 8px;border-radius:0 4px 4px 0;'
-      : 'background:#2a5c32;color:#fff;font-weight:bold;padding:4px 8px;border-radius:0 4px 4px 0;'
+    live ? 'background:#c0281e;color:#fff;font-weight:bold;padding:4px 8px;border-radius:0 4px 4px 0;'
+         : 'background:#2a5c32;color:#fff;font-weight:bold;padding:4px 8px;border-radius:0 4px 4px 0;'
   );
 }
 
 /* ─────────────────────────────────────────────────────────────
-   LIVE POPUP
+   POPUP
 ───────────────────────────────────────────────────────────── */
 function openLivePopup() {
-  const popup  = $('#live-popup');
-  const iframe = $('#popup-twitch-iframe');
+  const popup = $('#live-popup');
   if (!popup) return;
-  if (iframe && !iframe.src) iframe.src = twitchEmbedURL();
+  const f = $('#popup-twitch-iframe');
+  if (f && !f.src) f.src = twitchURL();
   popup.classList.add('visible');
   document.body.style.overflow = 'hidden';
 }
-
 function closePopup() {
   const popup = $('#live-popup');
   if (!popup) return;
   popup.classList.remove('visible');
   document.body.style.overflow = '';
 }
-window.closePopup = closePopup; // global reference for inline onclick
+window.closePopup = closePopup;
 
 function initPopupEvents() {
-  const popup      = $('#live-popup');
-  const closeBtn   = $('#popup-close-btn');
-  const dismissBtn = $('#popup-dismiss-btn');
+  const popup = $('#live-popup');
   if (!popup) return;
-  popup.addEventListener('click',  (e) => { if (e.target === popup) closePopup(); });
-  if (closeBtn)   closeBtn.addEventListener('click', closePopup);
-  if (dismissBtn) dismissBtn.addEventListener('click', closePopup);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
+  popup.addEventListener('click', e => { if (e.target === popup) closePopup(); });
+  $('#popup-close-btn')  ?.addEventListener('click', closePopup);
+  $('#popup-dismiss-btn')?.addEventListener('click', closePopup);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePopup(); });
 }
 
 /* ─────────────────────────────────────────────────────────────
-   BACKGROUND ART ROTATOR
+   TYPEWRITER EFFECT — hero tagline cycles phrases
+───────────────────────────────────────────────────────────── */
+function initTypewriter() {
+  const el = $('#hero-tagline');
+  if (!el) return;
+
+  const phrases = CONFIG.typingPhrases;
+  let pIdx = 0, cIdx = 0, deleting = false;
+
+  function tick() {
+    const phrase = phrases[pIdx];
+    if (!deleting) {
+      cIdx++;
+      el.textContent = phrase.slice(0, cIdx);
+      if (cIdx === phrase.length) {
+        deleting = true;
+        setTimeout(tick, 2200); // pause at full phrase
+        return;
+      }
+      setTimeout(tick, 68);
+    } else {
+      cIdx--;
+      el.textContent = phrase.slice(0, cIdx);
+      if (cIdx === 0) {
+        deleting = false;
+        pIdx = (pIdx + 1) % phrases.length;
+        setTimeout(tick, 400);
+        return;
+      }
+      setTimeout(tick, 34);
+    }
+  }
+  tick();
+}
+
+/* ─────────────────────────────────────────────────────────────
+   ANIMATED STAT COUNTERS — count up on scroll into view
+───────────────────────────────────────────────────────────── */
+function initCounters() {
+  const counters = $$('[data-count]');
+  if (!counters.length) return;
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el      = entry.target;
+      const target  = parseFloat(el.dataset.count);
+      const suffix  = el.dataset.suffix ?? '';
+      const prefix  = el.dataset.prefix ?? '';
+      const isFloat = el.dataset.float === 'true';
+      const dur     = 1400;
+      const start   = performance.now();
+
+      function step(now) {
+        const p   = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3); // ease-out cubic
+        const val  = target * ease;
+        el.textContent = prefix + (isFloat ? val.toFixed(1) : Math.floor(val)) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+
+  counters.forEach(el => io.observe(el));
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MARQUEE STRIP — auto-scrolling banner of platform chips
+───────────────────────────────────────────────────────────── */
+function initMarquee() {
+  const track = $('#marquee-track');
+  if (!track) return;
+  // Duplicate content for seamless loop
+  track.innerHTML += track.innerHTML;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CURSOR GLOW — soft radial that follows mouse
+───────────────────────────────────────────────────────────── */
+function initCursorGlow() {
+  // Don't run on touch devices
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+
+  const glow = document.createElement('div');
+  glow.id = 'cursor-glow';
+  document.body.appendChild(glow);
+
+  let mx = -999, my = -999;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+
+  let rafId;
+  let cx = -999, cy = -999;
+  function animate() {
+    cx += (mx - cx) * 0.08;
+    cy += (my - cy) * 0.08;
+    glow.style.transform = `translate(${cx}px, ${cy}px)`;
+    rafId = requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* ─────────────────────────────────────────────────────────────
+   BACKGROUND
 ───────────────────────────────────────────────────────────── */
 function initBackground() {
   const bgEl     = $('#bg-art');
   const aboutImg = $('#about-bg-img');
+  const heroImg  = $('#hero-art-img');
   if (!bgEl) return;
 
   const chosen  = CONFIG.backgroundImages[Math.floor(Math.random() * CONFIG.backgroundImages.length)];
@@ -269,66 +360,46 @@ function initBackground() {
     bgEl.style.backgroundImage = `url("${chosen}")`;
     bgEl.style.opacity = '1';
     if (aboutImg) aboutImg.src = chosen;
+    if (heroImg)  heroImg.src  = chosen;
   };
   preload.onerror = () => { bgEl.style.opacity = '1'; };
   preload.src = chosen;
 }
 
 /* ─────────────────────────────────────────────────────────────
-   SCROLL REVEAL — IntersectionObserver, fires once per element
+   SCROLL REVEAL
 ───────────────────────────────────────────────────────────── */
 function initScrollReveal() {
-  const targets = $$('.reveal');
-  if (!targets.length) return;
+  const els = $$('.reveal');
+  if (!els.length) return;
   const io = new IntersectionObserver(
-    (entries) => entries.forEach((e) => {
-      if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
-    }),
-    { threshold: 0.10, rootMargin: '0px 0px -32px 0px' }
+    entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); } }),
+    { threshold: 0.08, rootMargin: '0px 0px -28px 0px' }
   );
-  targets.forEach((el) => io.observe(el));
+  els.forEach(el => io.observe(el));
 }
 
 /* ─────────────────────────────────────────────────────────────
-   SCHEDULE — highlight today's column
-───────────────────────────────────────────────────────────── */
-function initSchedule() {
-  const DAY_ABBR = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const today = DAY_ABBR[new Date().getDay()];
-  $$('.day-card').forEach((card) => {
-    if (card.querySelector('.day-name')?.textContent.trim() === today) {
-      card.classList.add('today');
-    }
-  });
-}
-
-/* ─────────────────────────────────────────────────────────────
-   NAV — add scrolled class + active link tracking
+   NAV
 ───────────────────────────────────────────────────────────── */
 function initNav() {
   const nav = $('nav');
   if (!nav) return;
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > CONFIG.navScrollThreshold), { passive: true });
 
-  // Scrolled background
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > CONFIG.navScrollThreshold);
-  }, { passive: true });
-
-  // Active section highlight
   const sections = $$('section[id]');
   const links    = $$('.nav-links a[href^="#"]');
   if (sections.length && links.length) {
-    const sectionIO = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => {
         if (e.isIntersecting) {
-          links.forEach((a) => a.classList.remove('active'));
-          const match = links.find((a) => a.getAttribute('href') === `#${e.target.id}`);
-          if (match) match.classList.add('active');
+          links.forEach(a => a.classList.remove('active'));
+          links.find(a => a.getAttribute('href') === `#${e.target.id}`)?.classList.add('active');
         }
       }),
-      { threshold: 0.45 }
+      { threshold: 0.40 }
     );
-    sections.forEach((s) => sectionIO.observe(s));
+    sections.forEach(s => io.observe(s));
   }
 }
 
@@ -336,20 +407,20 @@ function initNav() {
    SMOOTH SCROLL
 ───────────────────────────────────────────────────────────── */
 function initSmoothScroll() {
-  $$('a[href^="#"]').forEach((link) => {
-    link.addEventListener('click', (e) => {
+  $$('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
       const id = link.getAttribute('href');
       if (id === '#') return;
-      const target = document.querySelector(id);
-      if (!target) return;
+      const t = document.querySelector(id);
+      if (!t) return;
       e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      t.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 }
 
 /* ─────────────────────────────────────────────────────────────
-   CLICK-TO-COPY BUSINESS EMAIL
+   COPY EMAIL
 ───────────────────────────────────────────────────────────── */
 function initCopyEmail() {
   const el = $('#contact-email');
@@ -361,9 +432,7 @@ function initCopyEmail() {
       el.textContent = 'Copied!';
       el.style.color = 'var(--green-lit)';
       setTimeout(() => { el.textContent = orig; el.style.color = ''; }, 1800);
-    }).catch(() => {
-      window.location.href = `mailto:${el.textContent.trim()}`;
-    });
+    }).catch(() => { location.href = `mailto:${el.textContent.trim()}`; });
   });
 }
 
@@ -372,12 +441,16 @@ function initCopyEmail() {
 ───────────────────────────────────────────────────────────── */
 function init() {
   initBackground();
+  renderSchedule();
   initScrollReveal();
-  initSchedule();
   initNav();
   initSmoothScroll();
   initPopupEvents();
   initCopyEmail();
+  initTypewriter();
+  initCounters();
+  initMarquee();
+  initCursorGlow();
   applyLiveState(isStreamLive());
 }
 
