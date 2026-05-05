@@ -1,5 +1,6 @@
 /* ============================================================
-   DARKSALXM — script.js  v6 PRIORITY UPDATE
+   DARKSALXM, script.js v8
+   Twitch live embed + newest playable YouTube upload when offline
    ============================================================ */
    'use strict';
 
@@ -8,13 +9,13 @@
       To update: change game / note here, push to GitHub. Done.
    ═══════════════════════════════════════════════════════════ */
    const SCHEDULE = [
-     { day:'Sun', stream:true,  icon:'🎮', time:'7–11 PM', game:'Variety',         note:'Chill chaos to close the week' },
-     { day:'Mon', stream:false, icon:'💤', time:'',         game:'',                note:'Rest day' },
-     { day:'Tue', stream:true,  icon:'🎮', time:'7–11 PM', game:'Variety',         note:'Anything goes, come find out' },
-     { day:'Wed', stream:true,  icon:'🕹️', time:'7–11 PM', game:'Variety',         note:'Mid-week energy check' },
-     { day:'Thu', stream:true,  icon:'💬', time:'7–11 PM', game:'Just Chatting',   note:'Talk to me. I dare you.' },
-     { day:'Fri', stream:true,  icon:'👾', time:'7–11 PM', game:'Community Night', note:'YOU pick the game. Bring chaos.' },
-     { day:'Sat', stream:false, icon:'💤', time:'',         game:'',                note:'Rest day' },
+     { day: 'Sun', stream: true,  icon: '🎮', time: '7–11 PM', game: 'Variety',         note: 'Chill chaos to close the week' },
+     { day: 'Mon', stream: false, icon: '💤', time: '',         game: '',                note: 'Rest day' },
+     { day: 'Tue', stream: true,  icon: '🎮', time: '7–11 PM', game: 'Variety',         note: 'Anything goes, come find out' },
+     { day: 'Wed', stream: true,  icon: '🕹️', time: '7–11 PM', game: 'Variety',         note: 'Mid-week energy check' },
+     { day: 'Thu', stream: true,  icon: '💬', time: '7–11 PM', game: 'Just Chatting',   note: 'Talk to me. I dare you.' },
+     { day: 'Fri', stream: true,  icon: '👾', time: '7–11 PM', game: 'Community Night', note: 'YOU pick the game. Bring chaos.' },
+     { day: 'Sat', stream: false, icon: '💤', time: '',         game: '',                note: 'Rest day' },
    ];
    
    /* ═══════════════════════════════════════════════════════════
@@ -22,17 +23,25 @@
    ═══════════════════════════════════════════════════════════ */
    const CONFIG = {
      twitch: {
-       channel:   'darksalxm',
-       parent:    'salxm.com',
-       timezone:  'America/Chicago',
+       channel: 'darksalxm',
+       parent: 'salxm.com',
+       timezone: 'America/Chicago',
        startHour: 19,
-       endHour:   23,
+       endHour: 23,
      },
+   
      youtube: {
-       channelId:        'UCtZV0M-C3hTmMBbbb3X-MhQ',
-       uploadsPlaylist:  'UUtZV0M-C3hTmMBbbb3X-MhQ',
-       apiKey:           '',
+       channelId: 'UCtZV0M-C3hTmMBbbb3X-MhQ',
+       channelUrl: 'https://youtube.com/@darksalxm',
+   
+       /*
+         IMPORTANT:
+         Put your real YouTube Data API v3 key here.
+         Do not leave this blank.
+       */
+       apiKey: 'AIzaSyCvacCpSNCmta2uqwLuN-wnAxiHT9LjVG0',
      },
+   
      bgImages: [
        'https://pbs.twimg.com/media/Gdj17DCWsAAV1Bc?format=jpg&name=large',
        'https://pbs.twimg.com/media/Gan_VifWEAAWD78?format=jpg&name=large',
@@ -42,6 +51,7 @@
        'https://pbs.twimg.com/media/Gab6ay_WcAApqTi?format=jpg&name=large',
        'https://pbs.twimg.com/media/GZYPn-VXYAAFhRy?format=jpg&name=large',
      ],
+   
      typingPhrases: [
        'THE FAKE VTUBER. REAL CHAOS.',
        'NOT YOUR AVERAGE STREAMER.',
@@ -50,21 +60,20 @@
        'WHERE VTUBER MEETS IRL INSANITY.',
      ],
    
-     // Changed from 3000 to 9000 so the live popup feels less aggressive.
      popupDelay: 9000,
    };
    
    /* ═══════════════════════════════════════════════════════════
       UTILS
    ═══════════════════════════════════════════════════════════ */
-   const $  = (s, c = document) => c.querySelector(s);
-   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+   const $ = (selector, context = document) => context.querySelector(selector);
+   const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
    
    const getNowCST = () => new Date(
      new Date().toLocaleString('en-US', { timeZone: CONFIG.twitch.timezone })
    );
    
-   const getParam = n => new URLSearchParams(location.search).get(n);
+   const getParam = name => new URLSearchParams(location.search).get(name);
    
    /* ═══════════════════════════════════════════════════════════
       LIVE DETECTION
@@ -122,6 +131,7 @@
        badge.className = live ? 'hero-status-badge live' : 'hero-status-badge offline';
    
        const badgeText = badge.querySelector('.badge-text');
+   
        if (badgeText) {
          badgeText.textContent = live ? 'LIVE NOW' : 'USUALLY LIVE 7 PM CST';
        }
@@ -136,13 +146,12 @@
    
      mountEmbed(live);
    
-     // Safer popup behavior:
-     // Does not auto-open on mobile or for people who prefer reduced motion.
      const canShowPopup =
+       live &&
        !matchMedia('(max-width:700px)').matches &&
        !matchMedia('(prefers-reduced-motion: reduce)').matches;
    
-     if (live && canShowPopup) {
+     if (canShowPopup) {
        setTimeout(openPopup, CONFIG.popupDelay);
      }
    
@@ -155,109 +164,204 @@
    
    /* ═══════════════════════════════════════════════════════════
       SMART EMBED
+      Twitch when live, newest public embeddable YouTube upload when offline.
    ═══════════════════════════════════════════════════════════ */
    function twitchEmbedSrc() {
-    return `https://player.twitch.tv/?channel=${CONFIG.twitch.channel}&parent=${CONFIG.twitch.parent}&muted=true&autoplay=true`;
-  }
-  
-  function youtubeEmbedSrc(videoId = '') {
-    const params = new URLSearchParams({
-      autoplay: '1',
-      mute: '1',
-      playsinline: '1',
-      rel: '0',
-      modestbranding: '1',
-      controls: '1',
-      color: 'red'
-    });
-  
-    if (videoId) {
-      return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
-    }
-  
-    return `https://www.youtube.com/embed/videoseries?list=${CONFIG.youtube.uploadsPlaylist}&${params.toString()}`;
-  }
-  
-  async function fetchLatestVideo() {
-    if (!CONFIG.youtube.apiKey) return '';
-  
-    try {
-      const r = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?key=${CONFIG.youtube.apiKey}` +
-        `&channelId=${CONFIG.youtube.channelId}&part=id&order=date&maxResults=1&type=video`
-      );
-  
-      if (!r.ok) return '';
-  
-      const d = await r.json();
-      return d?.items?.[0]?.id?.videoId ?? '';
-    } catch {
-      return '';
-    }
-  }
-  
-  async function mountEmbed(live) {
-    const container = $('#embed-container');
-    const dot = $('#embed-dot');
-    const label = $('#embed-label');
-    const extLink = $('#embed-ext-link');
-  
-    if (!container) return;
-  
-    container.innerHTML = `
-      <div class="embed-spinner">
-        <div class="spinner-ring"></div>
-        <p>${live ? 'Connecting to stream…' : 'Loading YouTube videos…'}</p>
-      </div>
-    `;
-  
-    let src;
-    let labelText;
-    let href;
-  
-    if (live) {
-      src = twitchEmbedSrc();
-      labelText = 'LIVE ON TWITCH';
-      href = `https://twitch.tv/${CONFIG.twitch.channel}`;
-  
-      if (dot) {
-        dot.className = 'embed-dot live';
-      }
-    } else {
-      const vid = await fetchLatestVideo();
-  
-      src = youtubeEmbedSrc(vid);
-      labelText = 'YOUTUBE VIDEOS';
-      href = 'https://youtube.com/@darksalxm';
-  
-      if (dot) {
-        dot.className = 'embed-dot vod';
-      }
-    }
-  
-    if (label) {
-      label.textContent = labelText;
-    }
-  
-    if (extLink) {
-      extLink.href = href;
-      extLink.textContent = live ? 'OPEN TWITCH ↗' : 'OPEN YOUTUBE ↗';
-    }
-  
-    const iframe = document.createElement('iframe');
-  
-    iframe.title = live ? 'DarkSalxm Live on Twitch' : 'DarkSalxm YouTube Videos';
-    iframe.allowFullscreen = true;
-    iframe.loading = 'lazy';
-    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
-    iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
-  
-    container.innerHTML = '';
-    container.appendChild(iframe);
-  
-    iframe.src = src;
-  }
+     const params = new URLSearchParams({
+       channel: CONFIG.twitch.channel,
+       parent: CONFIG.twitch.parent,
+       muted: 'true',
+       autoplay: 'true',
+     });
+   
+     return `https://player.twitch.tv/?${params.toString()}`;
+   }
+   
+   function youtubeEmbedSrc(videoId) {
+     const params = new URLSearchParams({
+       autoplay: '1',
+       mute: '1',
+       playsinline: '1',
+       rel: '0',
+       controls: '1',
+       enablejsapi: '1',
+       origin: window.location.origin,
+     });
+   
+     return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+   }
+   
+   async function fetchLatestVideo() {
+     const apiKey = CONFIG.youtube.apiKey;
+   
+     if (!apiKey || apiKey === 'PASTE_YOUR_YOUTUBE_API_KEY_HERE') {
+       console.warn('No YouTube API key found. Add your API key inside CONFIG.youtube.apiKey.');
+       return '';
+     }
+   
+     try {
+       const searchParams = new URLSearchParams({
+         key: apiKey,
+         channelId: CONFIG.youtube.channelId,
+         part: 'snippet',
+         order: 'date',
+         maxResults: '10',
+         type: 'video',
+         videoEmbeddable: 'true',
+         videoSyndicated: 'true',
+       });
+   
+       const searchUrl = `https://www.googleapis.com/youtube/v3/search?${searchParams.toString()}`;
+       const searchResponse = await fetch(searchUrl);
+   
+       if (!searchResponse.ok) {
+         console.error('YouTube search API error:', searchResponse.status, searchResponse.statusText);
+         return '';
+       }
+   
+       const searchData = await searchResponse.json();
+   
+       const ids = (searchData.items || [])
+         .map(item => item?.id?.videoId)
+         .filter(Boolean);
+   
+       if (!ids.length) {
+         console.warn('No YouTube video IDs returned from search.');
+         return '';
+       }
+   
+       const videoParams = new URLSearchParams({
+         key: apiKey,
+         part: 'snippet,status,contentDetails',
+         id: ids.join(','),
+       });
+   
+       const videosUrl = `https://www.googleapis.com/youtube/v3/videos?${videoParams.toString()}`;
+       const videoResponse = await fetch(videosUrl);
+   
+       if (!videoResponse.ok) {
+         console.error('YouTube videos API error:', videoResponse.status, videoResponse.statusText);
+         return '';
+       }
+   
+       const videoData = await videoResponse.json();
+   
+       const playableVideo = (videoData.items || []).find(video => {
+         const status = video.status || {};
+         const snippet = video.snippet || {};
+   
+         const isPublic = status.privacyStatus === 'public';
+         const isEmbeddable = status.embeddable === true;
+         const isProcessed = status.uploadStatus === 'processed';
+         const isNotLivePlaceholder = snippet.liveBroadcastContent === 'none';
+   
+         return isPublic && isEmbeddable && isProcessed && isNotLivePlaceholder;
+       });
+   
+       if (!playableVideo) {
+         console.warn('No public embeddable processed YouTube videos found.');
+         return '';
+       }
+   
+       console.log(
+         'Embedding newest playable YouTube video:',
+         playableVideo.id,
+         playableVideo.snippet?.title
+       );
+   
+       return playableVideo.id;
+     } catch (error) {
+       console.error('Could not fetch latest YouTube video:', error);
+       return '';
+     }
+   }
+   
+   function renderYouTubeFallback(container) {
+     container.innerHTML = `
+       <div class="embed-spinner" style="text-align:center;padding:24px;">
+         <p style="margin-bottom:14px;">Could not load an embeddable YouTube upload.</p>
+         <a
+           href="${CONFIG.youtube.channelUrl}"
+           target="_blank"
+           rel="noopener"
+           class="btn btn-primary"
+           style="display:inline-flex;"
+         >
+           <i class="fab fa-youtube"></i> Open YouTube
+         </a>
+       </div>
+     `;
+   }
+   
+   async function mountEmbed(live) {
+     const container = $('#embed-container');
+     const dot = $('#embed-dot');
+     const label = $('#embed-label');
+     const extLink = $('#embed-ext-link');
+   
+     if (!container) return;
+   
+     let src = '';
+     let labelText = '';
+     let href = '';
+   
+     if (live) {
+       src = twitchEmbedSrc();
+       labelText = 'LIVE ON TWITCH';
+       href = `https://twitch.tv/${CONFIG.twitch.channel}`;
+   
+       if (dot) {
+         dot.className = 'embed-dot live';
+       }
+     } else {
+       const videoId = await fetchLatestVideo();
+   
+       labelText = 'NEWEST YOUTUBE UPLOAD';
+       href = CONFIG.youtube.channelUrl;
+   
+       if (dot) {
+         dot.className = 'embed-dot vod';
+       }
+   
+       if (!videoId) {
+         if (label) {
+           label.textContent = labelText;
+         }
+   
+         if (extLink) {
+           extLink.href = href;
+           extLink.textContent = 'OPEN YOUTUBE ↗';
+         }
+   
+         renderYouTubeFallback(container);
+         return;
+       }
+   
+       src = youtubeEmbedSrc(videoId);
+     }
+   
+     if (label) {
+       label.textContent = labelText;
+     }
+   
+     if (extLink) {
+       extLink.href = href;
+       extLink.textContent = live ? 'OPEN TWITCH ↗' : 'OPEN YOUTUBE ↗';
+     }
+   
+     container.innerHTML = '';
+   
+     const iframe = document.createElement('iframe');
+   
+     iframe.src = src;
+     iframe.title = live ? 'DarkSalxm Live on Twitch' : 'DarkSalxm Newest YouTube Upload';
+     iframe.allowFullscreen = true;
+     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+     iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+     iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;background:#000;';
+   
+     container.appendChild(iframe);
+   }
    
    /* ═══════════════════════════════════════════════════════════
       POPUP
@@ -290,15 +394,15 @@
      const popup = $('#live-popup');
      if (!popup) return;
    
-     popup.addEventListener('click', e => {
-       if (e.target === popup) closePopup();
+     popup.addEventListener('click', event => {
+       if (event.target === popup) closePopup();
      });
    
      $('#popup-close')?.addEventListener('click', closePopup);
      $('#popup-dismiss')?.addEventListener('click', closePopup);
    
-     document.addEventListener('keydown', e => {
-       if (e.key === 'Escape') closePopup();
+     document.addEventListener('keydown', event => {
+       if (event.key === 'Escape') closePopup();
      });
    }
    
@@ -322,9 +426,11 @@
            ${today && s.stream ? '<div class="sched-today-dot"></div>' : ''}
            <div class="sched-day">${s.day}</div>
            <div class="sched-icon">${s.icon}</div>
-           ${s.stream
-             ? `<div class="sched-game">${s.game}</div><div class="sched-time">${s.time}</div>`
-             : `<div class="sched-off">Off</div>`}
+           ${
+             s.stream
+               ? `<div class="sched-game">${s.game}</div><div class="sched-time">${s.time}</div>`
+               : `<div class="sched-off">Off</div>`
+           }
          </div>
        `;
      }).join('');
@@ -365,17 +471,17 @@
      if (!el) return;
    
      const phrases = CONFIG.typingPhrases;
-     let p = 0;
-     let c = 0;
+     let phraseIndex = 0;
+     let characterIndex = 0;
      let deleting = false;
    
      function tick() {
-       const phrase = phrases[p];
+       const phrase = phrases[phraseIndex];
    
        if (!deleting) {
-         el.textContent = phrase.slice(0, ++c);
+         el.textContent = phrase.slice(0, ++characterIndex);
    
-         if (c === phrase.length) {
+         if (characterIndex === phrase.length) {
            deleting = true;
            setTimeout(tick, 2400);
            return;
@@ -383,11 +489,11 @@
    
          setTimeout(tick, 55);
        } else {
-         el.textContent = phrase.slice(0, --c);
+         el.textContent = phrase.slice(0, --characterIndex);
    
-         if (c === 0) {
+         if (characterIndex === 0) {
            deleting = false;
-           p = (p + 1) % phrases.length;
+           phraseIndex = (phraseIndex + 1) % phrases.length;
            setTimeout(tick, 350);
            return;
          }
@@ -404,10 +510,10 @@
    ═══════════════════════════════════════════════════════════ */
    function initCounters() {
      const io = new IntersectionObserver(entries => {
-       entries.forEach(e => {
-         if (!e.isIntersecting) return;
+       entries.forEach(entry => {
+         if (!entry.isIntersecting) return;
    
-         const el = e.target;
+         const el = entry.target;
          const target = parseFloat(el.dataset.count);
          const suffix = el.dataset.suffix ?? '';
          const duration = 1600;
@@ -436,10 +542,11 @@
       MARQUEE
    ═══════════════════════════════════════════════════════════ */
    function initMarquee() {
-     const t = $('#marquee-track');
+     const track = $('#marquee-track');
    
-     if (t) {
-       t.innerHTML += t.innerHTML;
+     if (track && !track.dataset.duplicated) {
+       track.innerHTML += track.innerHTML;
+       track.dataset.duplicated = 'true';
      }
    }
    
@@ -449,24 +556,24 @@
    function initCursorGlow() {
      if (matchMedia('(pointer:coarse)').matches) return;
    
-     const g = Object.assign(document.createElement('div'), { id: 'cursor-glow' });
-     document.body.appendChild(g);
+     const glow = Object.assign(document.createElement('div'), { id: 'cursor-glow' });
+     document.body.appendChild(glow);
    
-     let mx = -999;
-     let my = -999;
-     let cx = -999;
-     let cy = -999;
+     let mouseX = -999;
+     let mouseY = -999;
+     let currentX = -999;
+     let currentY = -999;
    
-     document.addEventListener('mousemove', e => {
-       mx = e.clientX;
-       my = e.clientY;
+     document.addEventListener('mousemove', event => {
+       mouseX = event.clientX;
+       mouseY = event.clientY;
      }, { passive: true });
    
      (function frame() {
-       cx += (mx - cx) * 0.07;
-       cy += (my - cy) * 0.07;
+       currentX += (mouseX - currentX) * 0.07;
+       currentY += (mouseY - currentY) * 0.07;
    
-       g.style.transform = `translate(${cx}px, ${cy}px)`;
+       glow.style.transform = `translate(${currentX}px, ${currentY}px)`;
    
        requestAnimationFrame(frame);
      })();
@@ -477,10 +584,10 @@
    ═══════════════════════════════════════════════════════════ */
    function initReveal() {
      const io = new IntersectionObserver(
-       entries => entries.forEach(e => {
-         if (e.isIntersecting) {
-           e.target.classList.add('revealed');
-           io.unobserve(e.target);
+       entries => entries.forEach(entry => {
+         if (entry.isIntersecting) {
+           entry.target.classList.add('revealed');
+           io.unobserve(entry.target);
          }
        }),
        { threshold: 0.07, rootMargin: '0px 0px -24px 0px' }
@@ -512,19 +619,19 @@
      const links = $$('.nav-links a[href^="#"]');
    
      const io = new IntersectionObserver(
-       entries => entries.forEach(e => {
-         if (e.isIntersecting) {
-           links.forEach(a => a.classList.remove('active'));
+       entries => entries.forEach(entry => {
+         if (entry.isIntersecting) {
+           links.forEach(link => link.classList.remove('active'));
    
            links
-             .find(a => a.getAttribute('href') === `#${e.target.id}`)
+             .find(link => link.getAttribute('href') === `#${entry.target.id}`)
              ?.classList.add('active');
          }
        }),
        { threshold: 0.35 }
      );
    
-     $$('section[id]').forEach(s => io.observe(s));
+     $$('section[id]').forEach(section => io.observe(section));
    
      const toggle = $('#mobile-menu-btn');
      const mobileNav = $('#mobile-nav');
@@ -535,7 +642,7 @@
          toggle.classList.toggle('open');
        });
    
-       $$('#mobile-nav a').forEach(a => a.addEventListener('click', () => {
+       $$('#mobile-nav a').forEach(link => link.addEventListener('click', () => {
          mobileNav.classList.remove('open');
          toggle.classList.remove('open');
        }));
@@ -546,18 +653,18 @@
       SMOOTH SCROLL
    ═══════════════════════════════════════════════════════════ */
    function initScroll() {
-     $$('a[href^="#"]').forEach(a => {
-       a.addEventListener('click', e => {
-         const id = a.getAttribute('href');
+     $$('a[href^="#"]').forEach(link => {
+       link.addEventListener('click', event => {
+         const id = link.getAttribute('href');
    
          if (id === '#') return;
    
-         const t = document.querySelector(id);
-         if (!t) return;
+         const target = document.querySelector(id);
+         if (!target) return;
    
-         e.preventDefault();
+         event.preventDefault();
    
-         t.scrollIntoView({
+         target.scrollIntoView({
            behavior: 'smooth',
            block: 'start',
          });
