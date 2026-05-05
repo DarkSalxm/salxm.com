@@ -157,105 +157,107 @@
       SMART EMBED
    ═══════════════════════════════════════════════════════════ */
    function twitchEmbedSrc() {
-     return `https://player.twitch.tv/?channel=${CONFIG.twitch.channel}&parent=${CONFIG.twitch.parent}&muted=true&autoplay=true`;
-   }
-   
-   function youtubeEmbedSrc(videoId = '') {
-     const base = 'https://www.youtube-nocookie.com/embed';
-   
-     if (videoId) {
-       return `${base}/${videoId}?rel=0&modestbranding=1&color=red`;
-     }
-   
-     return `${base}?list=${CONFIG.youtube.uploadsPlaylist}&listType=playlist&rel=0&modestbranding=1&color=red`;
-   }
-   
-   async function fetchLatestVideo() {
-     if (!CONFIG.youtube.apiKey) return '';
-   
-     try {
-       const r = await fetch(
-         `https://www.googleapis.com/youtube/v3/search?key=${CONFIG.youtube.apiKey}` +
-         `&channelId=${CONFIG.youtube.channelId}&part=id&order=date&maxResults=1&type=video`
-       );
-   
-       if (!r.ok) return '';
-   
-       const d = await r.json();
-       return d?.items?.[0]?.id?.videoId ?? '';
-     } catch {
-       return '';
-     }
-   }
-   
-   async function mountEmbed(live) {
-     const container = $('#embed-container');
-     const dot       = $('#embed-dot');
-     const label     = $('#embed-label');
-     const extLink   = $('#embed-ext-link');
-   
-     if (!container) return;
-   
-     container.innerHTML = `
-       <div class="embed-spinner">
-         <div class="spinner-ring"></div>
-         <p>${live ? 'Connecting to stream…' : 'Loading latest video…'}</p>
-       </div>
-     `;
-   
-     let src;
-     let labelText;
-     let href;
-   
-     if (live) {
-       src = twitchEmbedSrc();
-       labelText = 'LIVE ON TWITCH';
-       href = `https://twitch.tv/${CONFIG.twitch.channel}`;
-   
-       if (dot) {
-         dot.className = 'embed-dot live';
-       }
-     } else {
-       const vid = await fetchLatestVideo();
-   
-       src = youtubeEmbedSrc(vid);
-       labelText = 'LATEST VIDEO, YOUTUBE';
-       href = 'https://youtube.com/@darksalxm';
-   
-       if (dot) {
-         dot.className = 'embed-dot vod';
-       }
-     }
-   
-     if (label) {
-       label.textContent = labelText;
-     }
-   
-     if (extLink) {
-       extLink.href = href;
-       extLink.textContent = live ? 'OPEN TWITCH ↗' : 'OPEN YOUTUBE ↗';
-     }
-   
-     const iframe = document.createElement('iframe');
-   
-     iframe.src = src;
-     iframe.allowFullscreen = true;
-     iframe.title = live ? 'DarkSalxm Live on Twitch' : 'DarkSalxm, Latest Video';
-     iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
-     iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
-   
-     iframe.onload = () => {
-       container.innerHTML = '';
-       container.appendChild(iframe);
-     };
-   
-     setTimeout(() => {
-       if (container.querySelector('.embed-spinner')) {
-         container.innerHTML = '';
-         container.appendChild(iframe);
-       }
-     }, 4500);
-   }
+    return `https://player.twitch.tv/?channel=${CONFIG.twitch.channel}&parent=${CONFIG.twitch.parent}&muted=true&autoplay=true`;
+  }
+  
+  function youtubeEmbedSrc(videoId = '') {
+    const params = new URLSearchParams({
+      autoplay: '1',
+      mute: '1',
+      playsinline: '1',
+      rel: '0',
+      modestbranding: '1',
+      controls: '1',
+      color: 'red'
+    });
+  
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+    }
+  
+    return `https://www.youtube.com/embed/videoseries?list=${CONFIG.youtube.uploadsPlaylist}&${params.toString()}`;
+  }
+  
+  async function fetchLatestVideo() {
+    if (!CONFIG.youtube.apiKey) return '';
+  
+    try {
+      const r = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?key=${CONFIG.youtube.apiKey}` +
+        `&channelId=${CONFIG.youtube.channelId}&part=id&order=date&maxResults=1&type=video`
+      );
+  
+      if (!r.ok) return '';
+  
+      const d = await r.json();
+      return d?.items?.[0]?.id?.videoId ?? '';
+    } catch {
+      return '';
+    }
+  }
+  
+  async function mountEmbed(live) {
+    const container = $('#embed-container');
+    const dot = $('#embed-dot');
+    const label = $('#embed-label');
+    const extLink = $('#embed-ext-link');
+  
+    if (!container) return;
+  
+    container.innerHTML = `
+      <div class="embed-spinner">
+        <div class="spinner-ring"></div>
+        <p>${live ? 'Connecting to stream…' : 'Loading YouTube videos…'}</p>
+      </div>
+    `;
+  
+    let src;
+    let labelText;
+    let href;
+  
+    if (live) {
+      src = twitchEmbedSrc();
+      labelText = 'LIVE ON TWITCH';
+      href = `https://twitch.tv/${CONFIG.twitch.channel}`;
+  
+      if (dot) {
+        dot.className = 'embed-dot live';
+      }
+    } else {
+      const vid = await fetchLatestVideo();
+  
+      src = youtubeEmbedSrc(vid);
+      labelText = 'YOUTUBE VIDEOS';
+      href = 'https://youtube.com/@darksalxm';
+  
+      if (dot) {
+        dot.className = 'embed-dot vod';
+      }
+    }
+  
+    if (label) {
+      label.textContent = labelText;
+    }
+  
+    if (extLink) {
+      extLink.href = href;
+      extLink.textContent = live ? 'OPEN TWITCH ↗' : 'OPEN YOUTUBE ↗';
+    }
+  
+    const iframe = document.createElement('iframe');
+  
+    iframe.title = live ? 'DarkSalxm Live on Twitch' : 'DarkSalxm YouTube Videos';
+    iframe.allowFullscreen = true;
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+    iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+    iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:none;';
+  
+    container.innerHTML = '';
+    container.appendChild(iframe);
+  
+    iframe.src = src;
+  }
    
    /* ═══════════════════════════════════════════════════════════
       POPUP

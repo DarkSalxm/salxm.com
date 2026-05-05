@@ -5,33 +5,34 @@
   <!-- ═══ ANALYTICS ═══ -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-S2J43CMT6B"></script>
   <script>
-    window.dataLayer=window.dataLayer||[];
+    window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
-    gtag('js',new Date()); gtag('config','G-S2J43CMT6B');
+    gtag('js', new Date());
+    gtag('config', 'G-S2J43CMT6B');
   </script>
 
   <!-- ═══ META / SEO ═══ -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="DarkSalxm — The Fake VTuber. Real Chaos. Chaotic streams, unhinged community, real entertainment. Watch live on Twitch.">
-  <meta name="keywords"    content="DarkSalxm, Fake VTuber, Twitch streamer, VTuber, chaos streamer, community streams, TikTok, Discord">
-  <meta name="author"      content="DarkSalxm">
-  <meta name="robots"      content="index, follow">
+  <meta name="description" content="DarkSalxm: The Fake VTuber. Real Chaos. Chaotic streams, unhinged community, real entertainment. Watch live on Twitch.">
+  <meta name="keywords" content="DarkSalxm, Fake VTuber, Twitch streamer, VTuber, chaos streamer, community streams, TikTok, Discord">
+  <meta name="author" content="DarkSalxm">
+  <meta name="robots" content="index, follow">
 
   <!-- Open Graph -->
-  <meta property="og:type"        content="website">
-  <meta property="og:url"         content="https://salxm.com">
-  <meta property="og:title"       content="DarkSalxm — The Fake VTuber. Real Chaos.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://salxm.com">
+  <meta property="og:title" content="DarkSalxm: The Fake VTuber. Real Chaos.">
   <meta property="og:description" content="Chaotic streams, unhinged community, real entertainment. Watch live on Twitch.">
-  <meta property="og:image"       content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
+  <meta property="og:image" content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card"        content="summary_large_image">
-  <meta name="twitter:site"        content="@Darksalxm">
-  <meta name="twitter:creator"     content="@Darksalxm">
-  <meta name="twitter:title"       content="DarkSalxm — The Fake VTuber. Real Chaos.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Darksalxm">
+  <meta name="twitter:creator" content="@Darksalxm">
+  <meta name="twitter:title" content="DarkSalxm: The Fake VTuber. Real Chaos.">
   <meta name="twitter:description" content="Chaotic streams, unhinged community, real entertainment. Watch live on Twitch.">
-  <meta name="twitter:image"       content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
+  <meta name="twitter:image" content="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg">
 
   <!-- Structured data -->
   <script type="application/ld+json">
@@ -55,7 +56,7 @@
   }
   </script>
 
-  <title>DarkSalxm — The Fake VTuber. Real Chaos.</title>
+  <title>DarkSalxm: The Fake VTuber. Real Chaos.</title>
 
   <!-- ═══ FONTS ═══ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,6 +68,135 @@
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
 
   <link rel="stylesheet" href="style.css">
+
+  <!-- Small polish overrides added here so you only have to paste one file -->
+  <style>
+    .start-strip {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border2);
+      border-top: 1px solid var(--border2);
+      border-bottom: 1px solid var(--border2);
+    }
+
+    .start-strip a {
+      background: rgba(6,8,10,0.92);
+      padding: 18px var(--sp);
+      font-family: var(--font-m);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--t2);
+      transition: color var(--ease), background var(--ease);
+    }
+
+    .start-strip a:hover {
+      color: var(--t1);
+      background: rgba(196,43,32,0.08);
+    }
+
+    .start-strip span {
+      color: var(--red);
+      margin-right: 8px;
+    }
+
+    .about-hook-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r2);
+      padding: 18px 20px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-hook-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--red), var(--green-lit));
+      opacity: 0.8;
+    }
+
+    .about-hook-eyebrow {
+      font-family: var(--font-m);
+      font-size: 0.58rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 8px;
+    }
+
+    .about-hook-card p {
+      font-size: 0.94rem;
+      color: var(--t2);
+      line-height: 1.7;
+    }
+
+    .stats-row {
+      margin-top: 20px;
+    }
+
+    @media (max-width: 700px) {
+      .start-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .start-strip a {
+        padding: 14px 20px;
+      }
+
+      body {
+        padding-bottom: 78px;
+      }
+
+      .hero-ctas {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .btn-primary,
+      .btn-secondary,
+      .btn-discord {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .hero-quick-links {
+        gap: 7px;
+      }
+
+      .hero-quick-links a {
+        flex: 1 1 calc(50% - 7px);
+        justify-content: center;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      .hero-glow-title {
+        text-shadow:
+          0 0 8px rgba(255,255,255,0.10),
+          0 0 18px rgba(196,43,32,0.18);
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -85,47 +215,55 @@
         <i class="fab fa-twitch"></i> WATCH ON TWITCH
       </a>
       <span class="marquee-sep">✦</span>
+
       <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener" class="marquee-item mi-tiktok">
         <i class="fab fa-tiktok"></i> CLIPS ON TIKTOK
       </a>
       <span class="marquee-sep">✦</span>
+
       <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener" class="marquee-item mi-discord">
         <i class="fab fa-discord"></i> JOIN THE DISCORD
       </a>
       <span class="marquee-sep">✦</span>
+
       <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener" class="marquee-item mi-yt">
         <i class="fab fa-youtube"></i> VODS ON YOUTUBE
       </a>
       <span class="marquee-sep">✦</span>
+
       <a href="https://x.com/Darksalxm" target="_blank" rel="noopener" class="marquee-item">
         <i class="fab fa-x-twitter"></i> FOLLOW ON X
       </a>
       <span class="marquee-sep">✦</span>
+
       <a href="https://www.instagram.com/darksalxm/" target="_blank" rel="noopener" class="marquee-item" style="color:#E4405F">
         <i class="fab fa-instagram"></i> INSTAGRAM
       </a>
       <span class="marquee-sep">✦</span>
+
       <span class="marquee-item">THE FAKE VTUBER · REAL CHAOS</span>
       <span class="marquee-sep">✦</span>
+
       <span class="marquee-item">COMMUNITY FIRST · SCRIPT NEVER</span>
       <span class="marquee-sep">✦</span>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════
-       NAV (BELOW MARQUEE)
+       NAV
   ══════════════════════════════════════ -->
   <nav>
     <a href="#" class="nav-logo">Dark<span class="slash">/</span>Salxm</a>
 
     <div class="nav-center">
       <ul class="nav-links">
-        <li><a href="#about">About</a></li>
         <li><a href="#platforms">Socials</a></li>
+        <li><a href="#about">About</a></li>
         <li><a href="#schedule">Schedule</a></li>
         <li><a href="#watch">Watch</a></li>
-        <li><a href="#support">Support</a></li>
+        <li><a href="#support">Community</a></li>
       </ul>
+
       <div id="nav-live-pill" class="hidden">
         <span class="dot"></span> LIVE NOW
       </div>
@@ -138,11 +276,11 @@
 
   <!-- Mobile nav -->
   <div id="mobile-nav">
-    <a href="#about">About</a>
     <a href="#platforms">Socials</a>
+    <a href="#about">About</a>
     <a href="#schedule">Schedule</a>
     <a href="#watch">Watch</a>
-    <a href="#support">Support</a>
+    <a href="#support">Community</a>
     <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" style="color:var(--twitch)">
       <i class="fab fa-twitch"></i> Watch Live
     </a>
@@ -166,18 +304,16 @@
 
         <div class="hero-avatar-row">
           <div class="avatar-ring">
-            <img src="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg"
-                 alt="DarkSalxm avatar">
+            <img src="https://pbs.twimg.com/profile_images/1735758395053842432/b1LtYk42_400x400.jpg" alt="DarkSalxm avatar">
           </div>
+
           <div>
             <div class="hero-handle">DarkSalxm</div>
             <div class="hero-platform">Twitch · TikTok · YouTube · Discord</div>
           </div>
         </div>
 
-        <h1 class="hero-headline hero-headline-text">
-          DarkSalxm
-        </h1>
+        <h1 class="hero-headline hero-glow-title">DARKSALXM</h1>
 
         <div class="hero-typewriter" id="typewriter"></div>
 
@@ -188,14 +324,14 @@
         </p>
 
         <div class="hero-ctas">
-          <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener"
-             class="btn btn-primary" id="hero-primary-cta">
+          <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" class="btn btn-primary" id="hero-primary-cta">
             <i class="fab fa-twitch"></i> Watch on Twitch
           </a>
-          <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener"
-             class="btn btn-discord">
+
+          <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener" class="btn btn-discord">
             <i class="fab fa-discord"></i> Join the Discord
           </a>
+
           <a href="#platforms" class="btn btn-secondary">
             Find My Clips <i class="fas fa-arrow-down" style="font-size:0.72rem"></i>
           </a>
@@ -205,12 +341,15 @@
           <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener">
             <i class="fab fa-tiktok"></i> TikTok
           </a>
+
           <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener">
             <i class="fab fa-youtube"></i> YouTube
           </a>
+
           <a href="https://x.com/Darksalxm" target="_blank" rel="noopener">
             <i class="fab fa-x-twitter"></i> X
           </a>
+
           <a href="https://www.instagram.com/darksalxm/" target="_blank" rel="noopener">
             <i class="fab fa-instagram"></i> Instagram
           </a>
@@ -219,6 +358,84 @@
         <div class="scroll-hint">
           <i class="fas fa-chevron-down"></i> Scroll to explore
         </div>
+
+      </div>
+    </section>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━
+         START HERE STRIP
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div class="start-strip reveal">
+      <a href="#platforms">
+        <span>01</span>
+        Pick a platform
+      </a>
+
+      <a href="#watch">
+        <span>02</span>
+        Watch the chaos
+      </a>
+
+      <a href="#support">
+        <span>03</span>
+        Join the community
+      </a>
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━
+         PLATFORMS / SOCIALS
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="platforms">
+
+      <div class="sec-label reveal"><div class="l"></div><span>Socials</span></div>
+      <h2 class="sec-title reveal">Pick Your<br>Poison</h2>
+      <p class="sec-sub reveal d1">
+        Watch live chaos, join the community, or stalk the clips after stream.
+      </p>
+
+      <div class="platforms-grid">
+
+        <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" class="platform-card pc-twitch reveal d1">
+          <div class="p-icon"><i class="fab fa-twitch"></i></div>
+          <div class="p-name">Twitch</div>
+          <div class="p-handle">/Darksalxm</div>
+          <div class="p-why">Main streams, community chaos, and live reactions</div>
+        </a>
+
+        <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener" class="platform-card pc-discord reveal d1">
+          <div class="p-icon"><i class="fab fa-discord"></i></div>
+          <div class="p-name">Discord</div>
+          <div class="p-handle">Community Server</div>
+          <div class="p-why">Alerts, memes, polls, events, and the real community</div>
+        </a>
+
+        <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener" class="platform-card pc-youtube reveal d1">
+          <div class="p-icon"><i class="fab fa-youtube"></i></div>
+          <div class="p-name">YouTube</div>
+          <div class="p-handle">@darksalxm</div>
+          <div class="p-why">Best moments, VODs, reactions, and stream highlights</div>
+        </a>
+
+        <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener" class="platform-card pc-tiktok reveal d2">
+          <div class="p-icon"><i class="fab fa-tiktok"></i></div>
+          <div class="p-name">TikTok</div>
+          <div class="p-handle">@salxmvt</div>
+          <div class="p-why">Short-form chaos with zero context and maximum regret</div>
+        </a>
+
+        <a href="https://x.com/Darksalxm" target="_blank" rel="noopener" class="platform-card pc-twitter reveal d2">
+          <div class="p-icon"><i class="fab fa-x-twitter"></i></div>
+          <div class="p-name">Twitter / X</div>
+          <div class="p-handle">@Darksalxm</div>
+          <div class="p-why">Updates, thoughts, clips, and unfiltered yapping</div>
+        </a>
+
+        <a href="https://www.instagram.com/darksalxm/" target="_blank" rel="noopener" class="platform-card pc-instagram reveal d2">
+          <div class="p-icon"><i class="fab fa-instagram"></i></div>
+          <div class="p-name">Instagram</div>
+          <div class="p-handle">@darksalxm</div>
+          <div class="p-why">Photos, behind the scenes, and creator life stuff</div>
+        </a>
 
       </div>
     </section>
@@ -234,9 +451,7 @@
       <div class="about-grid">
 
         <div class="about-art reveal">
-          <img id="about-art-img"
-               src="https://pbs.twimg.com/media/Gdj17DCWsAAV1Bc?format=jpg&name=large"
-               alt="DarkSalxm art">
+          <img id="about-art-img" src="https://pbs.twimg.com/media/Gdj17DCWsAAV1Bc?format=jpg&name=large" alt="DarkSalxm art">
           <div class="art-caption">darksalxm · art</div>
         </div>
 
@@ -252,117 +467,40 @@
               Origin: Unknown. Model status: Abandoned. DarkSalxm showed up online one day,
               refused to follow the VTuber rulebook, and somehow built a community around pure
               chaos and genuinely unhinged entertainment. The "Fake" in Fake VTuber isn't a
-              limitation — it's the whole point.
+              limitation, it's the whole point.
             </p>
           </div>
 
-          <div class="pillars-grid reveal d2">
-            <div class="pillar">
-              <div class="pillar-icon">🎮</div>
-              <div><div class="pillar-title">Variety Streams</div><div class="pillar-desc">Whatever looks fun. No restrictions.</div></div>
-            </div>
-            <div class="pillar">
-              <div class="pillar-icon">👾</div>
-              <div><div class="pillar-title">Community Nights</div><div class="pillar-desc">Every Friday. You pick the game.</div></div>
-            </div>
-            <div class="pillar">
-              <div class="pillar-icon">💬</div>
-              <div><div class="pillar-title">Heavy Chat Interaction</div><div class="pillar-desc">Chat is the co-host. Always.</div></div>
-            </div>
-            <div class="pillar">
-              <div class="pillar-icon">🔴</div>
-              <div><div class="pillar-title">Face Cam + VTuber</div><div class="pillar-desc">Hybrid. Rules are suggestions.</div></div>
-            </div>
+          <div class="about-hook-card reveal d2">
+            <div class="about-hook-eyebrow">THE STREAM EXPERIENCE</div>
+            <p>
+              Expect yapping, games, community nights, chat-controlled moments, bad decisions,
+              and clips that somehow get worse the longer you watch.
+            </p>
           </div>
 
-          <!-- UPDATED STATS: removed Scripts Written, added Platforms Active -->
           <div class="stats-row reveal d3">
             <div class="stat-card">
               <div class="stat-num">∞</div>
               <div class="stat-lbl">Hours of Chaos</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-num" data-count="6" data-suffix="+">6+</div>
               <div class="stat-lbl">Platforms Active</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-num" data-count="5" data-suffix="x">5x</div>
               <div class="stat-lbl">Days / Week Live</div>
             </div>
+
             <div class="stat-card">
               <div class="stat-num" data-count="1">1</div>
               <div class="stat-lbl">Fake VTuber</div>
             </div>
           </div>
         </div>
-
-      </div>
-    </section>
-
-    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━
-         PLATFORMS / SOCIALS (FIRST AFTER ABOUT, CENTERED & UNIFORM)
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <section id="platforms">
-
-      <div class="sec-label reveal"><div class="l"></div><span>Socials</span></div>
-      <h2 class="sec-title reveal">Find Me<br>Everywhere</h2>
-      <p class="sec-sub reveal d1">Each platform is different. Follow all of them.</p>
-
-      <div class="platforms-grid">
-
-        <!-- Twitch -->
-        <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener"
-           class="platform-card pc-twitch reveal d1">
-          <div class="p-icon"><i class="fab fa-twitch"></i></div>
-          <div class="p-name">Twitch</div>
-          <div class="p-handle">/Darksalxm</div>
-          <div class="p-why">Live streams, 5 days a week</div>
-        </a>
-
-        <!-- Discord -->
-        <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener"
-           class="platform-card pc-discord reveal d1">
-          <div class="p-icon"><i class="fab fa-discord"></i></div>
-          <div class="p-name">Discord</div>
-          <div class="p-handle">Community Server</div>
-          <div class="p-why">Alerts, polls, clips, community</div>
-        </a>
-
-        <!-- YouTube -->
-        <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener"
-           class="platform-card pc-youtube reveal d1">
-          <div class="p-icon"><i class="fab fa-youtube"></i></div>
-          <div class="p-name">YouTube</div>
-          <div class="p-handle">@darksalxm</div>
-          <div class="p-why">VODs & best moments</div>
-        </a>
-
-        <!-- TikTok -->
-        <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener"
-           class="platform-card pc-tiktok reveal d2">
-          <div class="p-icon"><i class="fab fa-tiktok"></i></div>
-          <div class="p-name">TikTok</div>
-          <div class="p-handle">@salxmvt</div>
-          <div class="p-why">Viral clips & shorts</div>
-        </a>
-
-        <!-- Twitter / X -->
-        <a href="https://x.com/Darksalxm" target="_blank" rel="noopener"
-           class="platform-card pc-twitter reveal d2">
-          <div class="p-icon"><i class="fab fa-x-twitter"></i></div>
-          <div class="p-name">Twitter / X</div>
-          <div class="p-handle">@Darksalxm</div>
-          <div class="p-why">Daily unhinged thoughts</div>
-        </a>
-
-        <!-- Instagram (REPLACES THRONE) -->
-        <a href="https://www.instagram.com/darksalxm/" target="_blank" rel="noopener"
-           class="platform-card pc-instagram reveal d2">
-          <div class="p-icon"><i class="fab fa-instagram"></i></div>
-          <div class="p-name">Instagram</div>
-          <div class="p-handle">@darksalxm</div>
-          <div class="p-why">Behind the scenes & posts</div>
-        </a>
 
       </div>
     </section>
@@ -375,7 +513,7 @@
       <div class="sec-label reveal"><div class="l"></div><span>Schedule</span></div>
       <h2 class="sec-title reveal">When to<br>Catch Me</h2>
       <p class="sec-sub reveal d1">
-        Live Tue · Wed · Thu · Fri · Sun — 7 to 11 PM CST.
+        Live Tue · Wed · Thu · Fri · Sun, 7 to 11 PM CST.
         Fridays are Community Night. You pick the game.
       </p>
 
@@ -385,7 +523,7 @@
 
       <div class="sched-note reveal d3">
         <i class="fas fa-info-circle"></i>
-        Schedule may shift — check Twitter or Discord for real-time updates
+        Schedule may shift, check Twitter or Discord for real-time updates
       </div>
 
     </section>
@@ -407,6 +545,7 @@
           <div class="embed-dot vod" id="embed-dot"></div>
           <span id="embed-label">CHECKING…</span>
         </div>
+
         <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" id="embed-ext-link">OPEN ↗</a>
       </div>
 
@@ -422,31 +561,42 @@
       <div class="vod-row reveal d2">
         <a href="https://twitch.tv/Darksalxm/videos" target="_blank" rel="noopener" class="vod-card">
           <div class="vod-icon"><i class="fab fa-twitch"></i></div>
-          <div><div class="vod-title">Twitch VODs</div><div class="vod-meta">Past Broadcasts</div></div>
+          <div>
+            <div class="vod-title">Twitch VODs</div>
+            <div class="vod-meta">Past Broadcasts</div>
+          </div>
         </a>
+
         <a href="https://www.tiktok.com/@salxmvt" target="_blank" rel="noopener" class="vod-card">
           <div class="vod-icon"><i class="fab fa-tiktok"></i></div>
-          <div><div class="vod-title">TikTok Clips</div><div class="vod-meta">@salxmvt</div></div>
+          <div>
+            <div class="vod-title">TikTok Clips</div>
+            <div class="vod-meta">@salxmvt</div>
+          </div>
         </a>
+
         <a href="https://youtube.com/@darksalxm" target="_blank" rel="noopener" class="vod-card">
           <div class="vod-icon"><i class="fab fa-youtube"></i></div>
-          <div><div class="vod-title">YouTube Channel</div><div class="vod-meta">@darksalxm</div></div>
+          <div>
+            <div class="vod-title">YouTube Channel</div>
+            <div class="vod-meta">@darksalxm</div>
+          </div>
         </a>
       </div>
 
     </section>
 
-    <!-- CONTENT ECOSYSTEM SECTION REMOVED ENTIRELY -->
-
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━
-         SUPPORT
+         COMMUNITY & BUSINESS
     ━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <section id="support">
 
       <div>
-        <div class="sec-label reveal"><div class="l"></div><span>Support</span></div>
-        <h2 class="sec-title reveal">Keep the<br>Chaos Going</h2>
-        <p class="sec-sub reveal d1">Direct support, community, and brand partnership opportunities.</p>
+        <div class="sec-label reveal"><div class="l"></div><span>Community &amp; Business</span></div>
+        <h2 class="sec-title reveal">Join In or<br>Work With Me</h2>
+        <p class="sec-sub reveal d1">
+          Join the community, keep up with the chaos, or reach out for brand partnerships.
+        </p>
       </div>
 
       <div class="support-cards" style="margin-top:32px;">
@@ -454,7 +604,7 @@
         <div class="sup-card sc-discord reveal d1">
           <div class="sup-icon"><i class="fab fa-discord"></i></div>
           <h3>Join the Community</h3>
-          <p>The Discord is where the real DarkSalxm experience lives between streams — alerts, polls, memes, and unhinged community events.</p>
+          <p>The Discord is where the real DarkSalxm experience lives between streams, alerts, polls, memes, and unhinged community events.</p>
           <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener" class="btn-discord-s">
             <i class="fab fa-discord"></i> Join Server
           </a>
@@ -479,11 +629,13 @@
     <div class="contact-strip reveal">
       <div class="cs-left">
         <i class="fas fa-envelope"></i>
+
         <div>
           <div class="cs-label">Sponsorships &amp; Business Inquiries</div>
           <div class="cs-email copy-email" data-email="DarkSalxm@gmail.com">DarkSalxm@gmail.com</div>
         </div>
       </div>
+
       <div class="cs-tag">// CLICK EMAIL TO COPY</div>
     </div>
 
@@ -495,7 +647,7 @@
       <div class="f-copy">© 2025 DARKSALXM · THE FAKE VTUBER · REAL CHAOS</div>
     </footer>
 
-  </div><!-- /.page -->
+  </div>
 
   <!-- ══════════════════════════════════════
        POPUP
@@ -507,19 +659,21 @@
           <div class="popup-badge"><span class="dot"></span> LIVE NOW</div>
           <div class="popup-title">DarkSalxm is streaming!</div>
         </div>
+
         <button class="popup-close" id="popup-close" aria-label="Close">
           <i class="fas fa-times"></i>
         </button>
       </div>
+
       <div class="popup-embed">
-        <iframe id="popup-iframe" frameborder="0" allowfullscreen
-                allow="autoplay; fullscreen; picture-in-picture"
-                title="DarkSalxm Live"></iframe>
+        <iframe id="popup-iframe" frameborder="0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" title="DarkSalxm Live"></iframe>
       </div>
+
       <div class="popup-ft">
         <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" class="popup-twitch">
           <i class="fab fa-twitch"></i> Open Twitch
         </a>
+
         <button class="popup-dismiss" id="popup-dismiss">Dismiss</button>
       </div>
     </div>
@@ -532,6 +686,7 @@
     <a href="https://twitch.tv/Darksalxm" target="_blank" rel="noopener" class="btn btn-primary">
       <i class="fab fa-twitch"></i> Watch Live
     </a>
+
     <a href="https://discord.gg/fbP4QZpy9w" target="_blank" rel="noopener" class="btn btn-discord">
       <i class="fab fa-discord"></i> Discord
     </a>
