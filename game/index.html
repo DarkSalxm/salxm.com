@@ -346,7 +346,13 @@
       let live = 0;
       let lastMove = 0;
 
+      function fxOff() {
+        return document.body.classList.contains("fx-off")
+          || document.body.classList.contains("reduced-motion");
+      }
+
       function spark(x, y, opts = {}) {
+        if (fxOff()) return;
         if (live >= MAX_LIVE) return;
         const el = document.createElement("span");
         el.className = "sigil-spark";

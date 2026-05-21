@@ -11,10 +11,17 @@
   const CELL = 30;
   const NEXT_CELL = 22;
   const HOLD_CELL = 22;
+  const BOARD_W = COLS * CELL;
+  const BOARD_H = ROWS * CELL;
+  const NEXT_W = 120;
+  const NEXT_H = 360;
+  const HOLD_W = 120;
+  const HOLD_H = 120;
   const LB_KEY = "darktris_leaderboard_v1";
   const SETTINGS_KEY = "darktris_settings_v2";
   const LB_SIZE = 10;
-  const LOCK_DELAY = 500;
+  const LOCK_DELAY = 650;
+  const MAX_LOCK_RESETS = 15;
   const VISIBLE_NEXT = 5;
 
   const COLORS = {
@@ -140,6 +147,7 @@
   let gameOver = false;
   let dropTimer = 0;
   let lockTimer = 0;
+  let lockResets = 0;
   let lastTime = 0;
   let highlightedEntry = null;
   let lastScore = 0;
@@ -314,12 +322,25 @@
     });
   }
 
+  function isGrounded(piece) {
+    return !valid({ ...piece, y: piece.y + 1 });
+  }
+
+  function applyLockReset() {
+    if (active && isGrounded(active) && lockResets < MAX_LOCK_RESETS) {
+      lockTimer = 0;
+      lockResets++;
+    } else if (active && !isGrounded(active)) {
+      lockTimer = 0;
+    }
+  }
+
   function tryMove(dx, dy) {
     if (!active || gameOver || paused) return false;
     const moved = { ...active, x: active.x + dx, y: active.y + dy };
     if (valid(moved)) {
       active = moved;
-      if (dy !== 0) lockTimer = 0;
+      applyLockReset();
       draw();
       return true;
     }
@@ -333,7 +354,7 @@
       const test = { ...active, rot: newRot, x: active.x + kx, y: active.y + ky };
       if (valid(test)) {
         active = test;
-        lockTimer = 0;
+        applyLockReset();
         draw();
         return true;
       }
@@ -384,6 +405,7 @@
     ensureQueue();
     holdUsed = false;
     lockTimer = 0;
+    lockResets = 0;
     dropTimer = 0;
 
     if (!valid(active)) {
@@ -473,20 +495,18 @@
     lastTime = time;
 
     if (!paused && !gameOver && active) {
-      dropTimer += delta;
-      if (dropTimer >= dropInterval()) {
-        dropTimer = 0;
-        if (!tryMove(0, 1)) {
-          lockTimer += dropInterval();
-          if (lockTimer >= LOCK_DELAY) lockPiece();
-        }
-      }
-
-      if (!valid({ ...active, y: active.y + 1 })) {
+      if (isGrounded(active)) {
         lockTimer += delta;
-        if (lockTimer >= LOCK_DELAY) lockPiece();
+        if (lockTimer >= LOCK_DELAY) {
+          lockPiece();
+        }
       } else {
         lockTimer = 0;
+        dropTimer += delta;
+        if (dropTimer >= dropInterval()) {
+          dropTimer = 0;
+          tryMove(0, 1);
+        }
       }
     }
 
@@ -638,14 +658,14 @@
   }
 
   function drawBoardBackground() {
-    ctx.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
+    ctx.clearRect(0, 0, BOARD_W, BOARD_H);
 
-    const bg = ctx.createLinearGradient(0, 0, 0, boardCanvas.height);
+    const bg = ctx.createLinearGradient(0, 0, 0, BOARD_H);
     bg.addColorStop(0, "#09070d");
     bg.addColorStop(0.55, "#050408");
     bg.addColorStop(1, "#030205");
     ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
+    ctx.fillRect(0, 0, BOARD_W, BOARD_H);
 
     ctx.save();
     ctx.strokeStyle = "rgba(242,234,215,0.055)";
@@ -653,13 +673,13 @@
     for (let x = 0; x <= COLS; x++) {
       ctx.beginPath();
       ctx.moveTo(x * CELL + 0.5, 0);
-      ctx.lineTo(x * CELL + 0.5, ROWS * CELL);
+      ctx.lineTo(x * CELL + 0.5, BOARD_H);
       ctx.stroke();
     }
     for (let y = 0; y <= ROWS; y++) {
       ctx.beginPath();
       ctx.moveTo(0, y * CELL + 0.5);
-      ctx.lineTo(COLS * CELL, y * CELL + 0.5);
+      ctx.lineTo(BOARD_W, y * CELL + 0.5);
       ctx.stroke();
     }
     ctx.restore();
@@ -670,7 +690,7 @@
     ctx.font = "900 76px serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("⛧", boardCanvas.width / 2, boardCanvas.height / 2);
+    ctx.fillText("⛧", BOARD_W / 2, BOARD_H / 2);
     ctx.restore();
   }
 
@@ -775,35 +795,35 @@
     drawNext();
   }
 
-  function drawMiniBackground(context, canvas) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    const bg = context.createLinearGradient(0, 0, 0, canvas.height);
+  function drawMiniBackground(context, w, h) {
+    context.clearRect(0, 0, w, h);
+    const bg = context.createLinearGradient(0, 0, 0, h);
     bg.addColorStop(0, "rgba(14,10,18,0.94)");
     bg.addColorStop(1, "rgba(4,3,6,0.96)");
     context.fillStyle = bg;
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillRect(0, 0, w, h);
     context.strokeStyle = "rgba(242,234,215,0.08)";
-    context.strokeRect(0.5, 0.5, canvas.width - 1, canvas.height - 1);
+    context.strokeRect(0.5, 0.5, w - 1, h - 1);
   }
 
   function drawHold() {
-    drawMiniBackground(hctx, holdCanvas);
+    drawMiniBackground(hctx, HOLD_W, HOLD_H);
     if (!hold) {
       hctx.save();
       hctx.fillStyle = "rgba(242,234,215,0.34)";
       hctx.font = "12px JetBrains Mono, monospace";
       hctx.textAlign = "center";
-      hctx.fillText("EMPTY", holdCanvas.width / 2, holdCanvas.height / 2);
+      hctx.fillText("EMPTY", HOLD_W / 2, HOLD_H / 2);
       hctx.restore();
       return;
     }
-    drawPreviewPiece(hctx, hold, HOLD_CELL, holdCanvas.width / 2, holdCanvas.height / 2);
+    drawPreviewPiece(hctx, hold, HOLD_CELL, HOLD_W / 2, HOLD_H / 2);
   }
 
   function drawNext() {
-    drawMiniBackground(nctx, nextCanvas);
+    drawMiniBackground(nctx, NEXT_W, NEXT_H);
     nextQueue.slice(0, VISIBLE_NEXT).forEach((type, index) => {
-      drawPreviewPiece(nctx, type, NEXT_CELL, nextCanvas.width / 2, 46 + index * 66);
+      drawPreviewPiece(nctx, type, NEXT_CELL, NEXT_W / 2, 46 + index * 66);
     });
   }
 
@@ -882,6 +902,10 @@
     const activeElement = document.activeElement;
     const typing = activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName);
     if (typing) return;
+
+    if (document.querySelector("dialog[open]")) return;
+
+    if (!screens.game.classList.contains("screen-active")) return;
 
     const key = event.key.toLowerCase();
     const gameKeys = ["arrowleft", "arrowright", "arrowdown", "arrowup", " ", "spacebar", "shift", "c", "x", "z", "p", "escape"];
@@ -1062,8 +1086,23 @@
     });
   }
 
+  function setupHiDPI(canvas, context, logicalW, logicalH) {
+    const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 3));
+    canvas.style.width = logicalW + "px";
+    canvas.style.height = logicalH + "px";
+    canvas.width = Math.round(logicalW * dpr);
+    canvas.height = Math.round(logicalH * dpr);
+    context.setTransform(1, 0, 0, 1, 0, 0);
+    context.scale(dpr, dpr);
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+  }
+
   function init() {
     grid = makeGrid();
+    setupHiDPI(boardCanvas, ctx, BOARD_W, BOARD_H);
+    setupHiDPI(nextCanvas, nctx, NEXT_W, NEXT_H);
+    setupHiDPI(holdCanvas, hctx, HOLD_W, HOLD_H);
     applySettings();
     renderLeaderboard();
     updateHUD();
