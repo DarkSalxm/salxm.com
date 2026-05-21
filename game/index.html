@@ -1,154 +1,408 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DARKTRIS — Stack the Damned · DarkSalxm</title>
-<meta name="description" content="DARKTRIS — a gothic Tetris by DarkSalxm. Never-ending levels. Eternal leaderboard. Stack the damned." />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>DARKTRIS | Stack the Damned</title>
+  <meta name="description" content="DARKTRIS is a gothic browser Tetris remake by DarkSalxm with hold, next queue, ghost piece, leaderboard, mobile controls, and cursed polish." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <a class="skip-link" href="#game-title">Skip to game</a>
 
-<!-- atmospheric backdrop -->
-<div class="atmos" aria-hidden="true">
-  <div class="grain"></div>
-  <div class="vignette"></div>
-  <div class="sigil sigil-tl">&#9895;</div>
-  <div class="sigil sigil-tr">&#9895;</div>
-  <div class="sigil sigil-bl">&#9895;</div>
-  <div class="sigil sigil-br">&#9895;</div>
-</div>
-
-<!-- ====== INTRO SCREEN ====== -->
-<section id="intro" class="screen screen-active">
-  <div class="intro-wrap">
-    <div class="bats">
-      <span>&#77418;</span><span>&#77418;</span><span>&#77418;</span><span>&#77418;</span><span>&#77418;</span>
-    </div>
-    <p class="eyebrow">The Fake VTuber &middot; Real Chaos</p>
-    <h1 class="title-mark">
-      <span class="t-d">D</span><span class="t-a">A</span><span class="t-r">R</span><span class="t-k">K</span><span class="t-t">T</span><span class="t-r2">R</span><span class="t-i">I</span><span class="t-s">S</span>
-    </h1>
-    <p class="tagline">&mdash; stack the damned &mdash;</p>
-
-    <form id="nameForm" class="name-form" autocomplete="off">
-      <label for="playerName" class="name-label">Sign the pact. Whose soul shall we record?</label>
-      <input id="playerName" name="playerName" type="text" maxlength="14" placeholder="enter your name&hellip;" required />
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Begin Descent &#9895;</button>
-        <button type="button" class="btn btn-ghost" id="viewBoardBtn">View the Damned</button>
-      </div>
-    </form>
-
-    <p class="controls-hint">
-      &larr; &rarr; move &middot; &darr; soft drop &middot; &uarr; rotate &middot; <kbd>space</kbd> hard drop &middot; <kbd>shift</kbd> hold &middot; <kbd>p</kbd> pause
-    </p>
+  <div class="atmos" aria-hidden="true">
+    <div class="grain"></div>
+    <div class="vignette"></div>
+    <div class="fog fog-one"></div>
+    <div class="fog fog-two"></div>
+    <div class="sigil sigil-tl">⛧</div>
+    <div class="sigil sigil-tr">⛧</div>
+    <div class="sigil sigil-bl">⛧</div>
+    <div class="sigil sigil-br">⛧</div>
+    <div class="sigil sigil-xs" style="top:8%; left:14%;">⛧</div>
+    <div class="sigil sigil-lg" style="top:6%; left:42%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:18%; left:72%;">⛧</div>
+    <div class="sigil sigil-xl" style="top:32%; left:6%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:30%; left:88%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:46%; left:24%;">⛧</div>
+    <div class="sigil sigil-lg" style="top:52%; left:60%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:48%; left:92%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:62%; left:10%;">⛧</div>
+    <div class="sigil sigil-xl" style="top:66%; left:48%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:70%; left:80%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:82%; left:32%;">⛧</div>
+    <div class="sigil sigil-lg" style="top:86%; left:66%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:14%; left:30%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:38%; left:54%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:78%; left:14%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:90%; left:50%;">⛧</div>
+    <div class="sigil sigil-lg" style="top:22%; left:8%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:4%; left:62%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:10%; left:84%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:16%; left:4%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:24%; left:48%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:26%; left:96%;">⛧</div>
+    <div class="sigil sigil-lg" style="top:36%; left:36%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:40%; left:78%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:44%; left:4%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:50%; left:42%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:56%; left:18%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:58%; left:74%;">⛧</div>
+    <div class="sigil sigil-xl" style="top:60%; left:90%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:68%; left:6%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:72%; left:38%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:74%; left:58%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:80%; left:88%;">⛧</div>
+    <div class="sigil sigil-lg" style="top:84%; left:18%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:88%; left:76%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:94%; left:8%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:96%; left:38%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:94%; left:72%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:54%; left:50%;">⛧</div>
+    <div class="sigil sigil-sm" style="top:34%; left:22%;">⛧</div>
+    <div class="sigil sigil-xs" style="top:42%; left:66%;">⛧</div>
   </div>
-</section>
 
-<!-- ====== GAME SCREEN ====== -->
-<section id="game" class="screen">
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark">&#9895;</span>
-      <span class="brand-name">DARKTRIS</span>
-    </div>
-    <div class="who">Soul: <strong id="whoLabel">&mdash;</strong></div>
-    <button id="quitBtn" class="btn btn-ghost btn-sm">Forfeit</button>
-  </header>
+  <div id="sigil-spawner" class="sigil-spawner" aria-hidden="true"></div>
 
-  <main class="stage">
-    <!-- left rail: HOLD + NEXT -->
-    <aside class="rail rail-left">
-      <div class="panel">
-        <h3 class="panel-title">Hold</h3>
-        <canvas id="holdCanvas" width="120" height="120"></canvas>
-      </div>
-      <div class="panel">
-        <h3 class="panel-title">Next</h3>
-        <canvas id="nextCanvas" width="120" height="360"></canvas>
-      </div>
-    </aside>
+  <section id="intro" class="screen screen-active" aria-labelledby="intro-title">
+    <div class="intro-shell">
+      <div class="intro-card panel-glass">
+        <div class="bats" aria-hidden="true">
+          <span>🦇</span><span>🦇</span><span>🦇</span><span>🦇</span><span>🦇</span>
+        </div>
 
-    <!-- center: board -->
-    <div class="board-wrap">
-      <canvas id="board" width="300" height="600"></canvas>
-      <div id="overlay" class="overlay hidden">
-        <div class="overlay-inner">
-          <h2 id="overlayTitle">PAUSED</h2>
-          <p id="overlayBody">The void waits.</p>
-          <button id="overlayBtn" class="btn btn-primary">Resume</button>
+        <h1 id="intro-title" class="title-mark" aria-label="DARKTRIS">
+          <span>D</span><span>A</span><span>R</span><span>K</span><span>T</span><span>R</span><span>I</span><span>S</span>
+        </h1>
+        <p class="tagline">Stack the damned. Feed the void. Climb the ledger.</p>
+
+        <form id="nameForm" class="name-form" autocomplete="off">
+          <label for="playerName" class="name-label">Sign the pact</label>
+          <div class="input-wrap">
+            <input id="playerName" name="playerName" type="text" maxlength="14" placeholder="Your cursed name" required aria-describedby="nameHelp" />
+          </div>
+          <p id="nameHelp" class="tiny-note">Max 14 characters. Your score saves locally on this browser.</p>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Begin Descent</button>
+            <button type="button" class="btn btn-ghost" id="viewBoardBtn">View Ledger</button>
+            <button type="button" class="btn btn-ghost" id="openGuideBtn">Controls</button>
+          </div>
+        </form>
+
+        <div class="quick-guide" aria-label="Quick controls">
+          <span><kbd>←</kbd><kbd>→</kbd> Move</span>
+          <span><kbd>↑</kbd> Rotate</span>
+          <span><kbd>Space</kbd> Drop</span>
+          <span><kbd>Shift</kbd> Hold</span>
+          <span><kbd>P</kbd> Pause</span>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- right rail: stats -->
-    <aside class="rail rail-right">
-      <div class="panel stat-panel">
-        <h3 class="panel-title">Score</h3>
-        <div class="stat-value" id="scoreVal">0</div>
+  <section id="game" class="screen" aria-labelledby="game-title">
+    <header class="topbar">
+      <div class="brand" aria-label="DARKTRIS brand">
+        <span class="brand-mark" aria-hidden="true">⛧</span>
+        <div>
+          <h2 id="game-title" class="brand-name">DARKTRIS</h2>
+          <p class="brand-sub">Obsidian arcade ritual</p>
+        </div>
       </div>
-      <div class="panel stat-panel">
-        <h3 class="panel-title">Level</h3>
-        <div class="stat-value lvl" id="levelVal">1</div>
-        <div class="stat-sub">Circle of the Damned</div>
-      </div>
-      <div class="panel stat-panel">
-        <h3 class="panel-title">Lines</h3>
-        <div class="stat-value" id="linesVal">0</div>
-      </div>
-      <div class="panel stat-panel">
-        <h3 class="panel-title">High Score</h3>
-        <div class="stat-value hi" id="highVal">0</div>
-      </div>
-    </aside>
-  </main>
 
-  <!-- mobile controls -->
-  <div class="touchpad" id="touchpad">
-    <button data-act="left" class="tbtn">&#9664;</button>
-    <button data-act="rotate" class="tbtn">&#8635;</button>
-    <button data-act="right" class="tbtn">&#9654;</button>
-    <button data-act="hold" class="tbtn small">Hold</button>
-    <button data-act="soft" class="tbtn">&#9660;</button>
-    <button data-act="hard" class="tbtn primary">DROP</button>
-  </div>
-</section>
+      <div class="topbar-center">
+        <div class="who">Soul: <strong id="whoLabel">Anonymous Soul</strong></div>
+        <div id="statusPill" class="status-pill" aria-live="polite">Ready</div>
+      </div>
 
-<!-- ====== LEADERBOARD SCREEN ====== -->
-<section id="board-screen" class="screen">
-  <div class="lb-wrap">
-    <div class="bats">
-      <span>&#77418;</span><span>&#77418;</span><span>&#77418;</span>
+      <div class="topbar-actions">
+        <button id="pauseBtn" class="btn btn-ghost btn-sm" type="button">Pause</button>
+        <button id="settingsBtn" class="btn btn-ghost btn-sm" type="button">Settings</button>
+        <button id="quitBtn" class="btn btn-ghost btn-sm" type="button">Forfeit</button>
+      </div>
+    </header>
+
+    <main class="stage" aria-label="DARKTRIS game area">
+      <aside class="rail rail-left" aria-label="Piece panels">
+        <section class="panel mini-panel">
+          <div class="panel-heading">
+            <h3 class="panel-title">Hold</h3>
+            <span class="panel-chip" id="holdHint">Shift</span>
+          </div>
+          <canvas id="holdCanvas" width="120" height="120" aria-label="Held piece preview"></canvas>
+        </section>
+
+        <section class="panel mini-panel next-panel">
+          <div class="panel-heading">
+            <h3 class="panel-title">Next</h3>
+            <span class="panel-chip">Queue</span>
+          </div>
+          <canvas id="nextCanvas" width="120" height="360" aria-label="Next pieces preview"></canvas>
+        </section>
+      </aside>
+
+      <section class="board-column" aria-label="Main board">
+        <div class="board-meta">
+          <div>
+            <span class="meta-label">Drop Speed</span>
+            <strong id="speedVal">800ms</strong>
+          </div>
+          <div>
+            <span class="meta-label">Best</span>
+            <strong id="miniHighVal">0</strong>
+          </div>
+        </div>
+
+        <div class="board-wrap">
+          <canvas id="board" width="300" height="600" aria-label="DARKTRIS play field"></canvas>
+          <div id="lineFlash" class="line-flash" aria-hidden="true"></div>
+          <div id="scorePop" class="score-pop" aria-live="polite"></div>
+          <div id="levelBanner" class="level-banner" aria-live="polite"></div>
+
+          <div id="overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayBody">
+            <div class="overlay-inner panel-glass">
+              <p class="eyebrow overlay-eyebrow">The void has spoken</p>
+              <h2 id="overlayTitle">Paused</h2>
+              <p id="overlayBody">The board waits in silence.</p>
+              <div id="overlayStats" class="overlay-stats" hidden>
+                <div><span>Score</span><strong id="finalScore">0</strong></div>
+                <div><span>Level</span><strong id="finalLevel">1</strong></div>
+                <div><span>Lines</span><strong id="finalLines">0</strong></div>
+              </div>
+              <div class="overlay-actions">
+                <button id="overlayBtn" class="btn btn-primary" type="button">Resume</button>
+                <button id="playAgainBtn" class="btn btn-ghost" type="button" hidden>Play Again</button>
+                <button id="menuBtn" class="btn btn-ghost" type="button">Back to Menu</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="touchpad" id="touchpad" aria-label="Mobile controls">
+          <button data-act="left" class="tbtn" type="button" aria-label="Move left">◀</button>
+          <button data-act="rotate" class="tbtn" type="button" aria-label="Rotate">⟳</button>
+          <button data-act="right" class="tbtn" type="button" aria-label="Move right">▶</button>
+          <button data-act="hold" class="tbtn small" type="button" aria-label="Hold piece">Hold</button>
+          <button data-act="soft" class="tbtn" type="button" aria-label="Soft drop">▼</button>
+          <button data-act="hard" class="tbtn primary" type="button" aria-label="Hard drop">Drop</button>
+        </div>
+      </section>
+
+      <aside class="rail rail-right" aria-label="Stats panels">
+        <section class="panel stat-panel featured-stat">
+          <h3 class="panel-title">Score</h3>
+          <div class="stat-value" id="scoreVal">0</div>
+          <p class="stat-sub" id="scoreFeed">Feed the abyss.</p>
+        </section>
+
+        <div class="stat-grid">
+          <section class="panel stat-panel">
+            <h3 class="panel-title">Level</h3>
+            <div class="stat-value lvl" id="levelVal">1</div>
+            <p class="stat-sub">Circle</p>
+          </section>
+          <section class="panel stat-panel">
+            <h3 class="panel-title">Lines</h3>
+            <div class="stat-value" id="linesVal">0</div>
+            <p class="stat-sub">Cleansed</p>
+          </section>
+        </div>
+
+        <section class="panel stat-panel combo-panel">
+          <h3 class="panel-title">Combo</h3>
+          <div class="stat-value combo" id="comboVal">x0</div>
+          <p class="stat-sub" id="comboSub">Start the ritual.</p>
+        </section>
+
+        <section class="panel stat-panel">
+          <h3 class="panel-title">High Score</h3>
+          <div class="stat-value hi" id="highVal">0</div>
+          <p class="stat-sub" id="highSub">Local throne</p>
+        </section>
+
+        <section class="panel controls-card">
+          <h3 class="panel-title">Controls</h3>
+          <ul>
+            <li><span>Move</span><kbd>←</kbd><kbd>→</kbd></li>
+            <li><span>Rotate</span><kbd>↑</kbd><kbd>X</kbd></li>
+            <li><span>Soft Drop</span><kbd>↓</kbd></li>
+            <li><span>Hard Drop</span><kbd>Space</kbd></li>
+            <li><span>Hold</span><kbd>Shift</kbd><kbd>C</kbd></li>
+            <li><span>Pause</span><kbd>P</kbd><kbd>Esc</kbd></li>
+          </ul>
+        </section>
+      </aside>
+    </main>
+  </section>
+
+  <section id="board-screen" class="screen" aria-labelledby="ledger-title">
+    <div class="lb-wrap panel-glass">
+      <div class="bats" aria-hidden="true"><span>🦇</span><span>🦇</span><span>🦇</span></div>
+      <p class="eyebrow">Damned souls archive</p>
+      <h2 id="ledger-title" class="lb-title">Ledger of the Damned</h2>
+      <p class="lb-sub">Only the worthy carve their name in obsidian.</p>
+
+      <div class="lb-table" role="table" aria-label="Local leaderboard">
+        <div class="lb-row lb-head" role="row">
+          <span class="lb-rank" role="columnheader">#</span>
+          <span class="lb-name" role="columnheader">Soul</span>
+          <span class="lb-score" role="columnheader">Score</span>
+          <span class="lb-lvl" role="columnheader">Lvl</span>
+          <span class="lb-lines" role="columnheader">Lines</span>
+        </div>
+        <div id="lbBody"></div>
+      </div>
+
+      <div class="lb-actions">
+        <button id="lbBack" class="btn btn-primary" type="button">Return to Pact</button>
+      </div>
     </div>
-    <h2 class="lb-title">Ledger of the Damned</h2>
-    <p class="lb-sub">Only the worthy carve their name in obsidian.</p>
+  </section>
 
-    <div class="lb-table">
-      <div class="lb-row lb-head">
-        <span class="lb-rank">#</span>
-        <span class="lb-name">Soul</span>
-        <span class="lb-score">Score</span>
-        <span class="lb-lvl">Lvl</span>
-        <span class="lb-lines">Lines</span>
+  <dialog id="guideDialog" class="modal-card">
+    <div class="modal-head">
+      <div>
+        <p class="eyebrow">Survival guide</p>
+        <h2>How to play DARKTRIS</h2>
       </div>
-      <div id="lbBody"></div>
+      <button class="icon-btn" id="closeGuideBtn" type="button" aria-label="Close controls guide">×</button>
     </div>
-
-    <div class="lb-actions">
-      <button id="lbBack" class="btn btn-primary">Return to the Pact</button>
-      <button id="lbClear" class="btn btn-ghost">Burn the Ledger</button>
+    <div class="guide-grid">
+      <section>
+        <h3>Goal</h3>
+        <p>Stack blocks, clear full lines, survive as the level speed rises, and earn a cursed spot on the local leaderboard.</p>
+      </section>
+      <section>
+        <h3>Scoring</h3>
+        <p>Clearing multiple lines at once gives bigger points. Consecutive clears build combo bonus.</p>
+      </section>
+      <section>
+        <h3>Pro tip</h3>
+        <p>Use Hold to save a clutch piece, watch the ghost outline, and hard drop when your placement is locked in.</p>
+      </section>
     </div>
-  </div>
-</section>
+    <div class="guide-controls">
+      <span><kbd>←</kbd><kbd>→</kbd> Move</span>
+      <span><kbd>↑</kbd><kbd>X</kbd> Rotate</span>
+      <span><kbd>↓</kbd> Soft drop</span>
+      <span><kbd>Space</kbd> Hard drop</span>
+      <span><kbd>Shift</kbd><kbd>C</kbd> Hold</span>
+      <span><kbd>P</kbd><kbd>Esc</kbd> Pause</span>
+    </div>
+  </dialog>
 
-<footer class="footer">
-  <span>&#9895; darksalxm &middot; darktris &#9895;</span>
-</footer>
+  <dialog id="settingsDialog" class="modal-card">
+    <div class="modal-head">
+      <div>
+        <p class="eyebrow">Arcane tuning</p>
+        <h2>Settings</h2>
+      </div>
+      <button class="icon-btn" id="closeSettingsBtn" type="button" aria-label="Close settings">×</button>
+    </div>
+    <div class="settings-list">
+      <label class="toggle-row">
+        <span>
+          <strong>Ghost piece</strong>
+          <small>Show where the active piece will land.</small>
+        </span>
+        <input id="ghostToggle" type="checkbox" checked />
+      </label>
+      <label class="toggle-row">
+        <span>
+          <strong>Screen effects</strong>
+          <small>Line clear flashes, fog, score pops, and level banners.</small>
+        </span>
+        <input id="fxToggle" type="checkbox" checked />
+      </label>
+      <label class="toggle-row">
+        <span>
+          <strong>Reduced motion</strong>
+          <small>Calmer transitions for accessibility and focus.</small>
+        </span>
+        <input id="motionToggle" type="checkbox" />
+      </label>
+    </div>
+  </dialog>
 
-<script src="game.js"></script>
+  <footer class="footer">
+    <span>⛧ darksalxm · darktris ⛧</span>
+  </footer>
+
+  <script src="game.js"></script>
+  <script>
+    (() => {
+      const spawner = document.getElementById("sigil-spawner");
+      const intro = document.getElementById("intro");
+      if (!spawner || !intro) return;
+
+      const GLYPHS = ["⛧", "✦", "✧", "✪", "✶", "✷", "✸", "✹", "✺", "⚝", "☆", "★"];
+      const COLORS = ["#e63950", "#ff556a", "#2dffa6", "#a45ee5", "#d4af37", "#f2ead7"];
+      const MAX_LIVE = 60;
+      let live = 0;
+      let lastMove = 0;
+
+      function spark(x, y, opts = {}) {
+        if (live >= MAX_LIVE) return;
+        const el = document.createElement("span");
+        el.className = "sigil-spark";
+        el.textContent = opts.glyph || GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        el.style.color = opts.color || COLORS[Math.floor(Math.random() * COLORS.length)];
+        const size = opts.size || (10 + Math.random() * 26);
+        el.style.fontSize = size + "px";
+        const dx = (opts.dx ?? ((Math.random() - 0.5) * 160));
+        const dy = (opts.dy ?? (-40 - Math.random() * 120));
+        const rot = (Math.random() - 0.5) * 540;
+        const dur = opts.dur || (700 + Math.random() * 900);
+        el.style.setProperty("--dx", dx + "px");
+        el.style.setProperty("--dy", dy + "px");
+        el.style.setProperty("--rot", rot + "deg");
+        el.style.animationDuration = dur + "ms";
+        spawner.appendChild(el);
+        live++;
+        el.addEventListener("animationend", () => {
+          el.remove();
+          live--;
+        }, { once: true });
+      }
+
+      intro.addEventListener("mousemove", e => {
+        const now = performance.now();
+        if (now - lastMove < 32) return;
+        lastMove = now;
+        spark(e.clientX, e.clientY);
+        if (Math.random() < 0.35) spark(e.clientX + (Math.random() - 0.5) * 20, e.clientY + (Math.random() - 0.5) * 20);
+      });
+
+      intro.addEventListener("click", e => {
+        const burst = 14;
+        for (let i = 0; i < burst; i++) {
+          const angle = (Math.PI * 2 * i) / burst + Math.random() * 0.4;
+          const speed = 80 + Math.random() * 140;
+          spark(e.clientX, e.clientY, {
+            dx: Math.cos(angle) * speed,
+            dy: Math.sin(angle) * speed - 30,
+            size: 14 + Math.random() * 24,
+            dur: 900 + Math.random() * 700
+          });
+        }
+      });
+
+      intro.addEventListener("touchmove", e => {
+        const t = e.touches[0];
+        if (!t) return;
+        const now = performance.now();
+        if (now - lastMove < 50) return;
+        lastMove = now;
+        spark(t.clientX, t.clientY);
+      }, { passive: true });
+    })();
+  </script>
 </body>
 </html>
