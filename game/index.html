@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DARKTRIS — Stack the Damned · DarkSalxm</title>
+<meta name="description" content="DARKTRIS — a gothic Tetris by DarkSalxm. Never-ending levels. Eternal leaderboard. Stack the damned." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- atmospheric backdrop -->
+<div class="atmos" aria-hidden="true">
+  <div class="grain"></div>
+  <div class="vignette"></div>
+  <div class="sigil sigil-tl">&#9895;</div>
+  <div class="sigil sigil-tr">&#9895;</div>
+  <div class="sigil sigil-bl">&#9895;</div>
+  <div class="sigil sigil-br">&#9895;</div>
+</div>
+
+<!-- ====== INTRO SCREEN ====== -->
+<section id="intro" class="screen screen-active">
+  <div class="intro-wrap">
+    <div class="bats">
+      <span>&#77418;</span><span>&#77418;</span><span>&#77418;</span><span>&#77418;</span><span>&#77418;</span>
+    </div>
+    <p class="eyebrow">The Fake VTuber &middot; Real Chaos</p>
+    <h1 class="title-mark">
+      <span class="t-d">D</span><span class="t-a">A</span><span class="t-r">R</span><span class="t-k">K</span><span class="t-t">T</span><span class="t-r2">R</span><span class="t-i">I</span><span class="t-s">S</span>
+    </h1>
+    <p class="tagline">&mdash; stack the damned &mdash;</p>
+
+    <form id="nameForm" class="name-form" autocomplete="off">
+      <label for="playerName" class="name-label">Sign the pact. Whose soul shall we record?</label>
+      <input id="playerName" name="playerName" type="text" maxlength="14" placeholder="enter your name&hellip;" required />
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Begin Descent &#9895;</button>
+        <button type="button" class="btn btn-ghost" id="viewBoardBtn">View the Damned</button>
+      </div>
+    </form>
+
+    <p class="controls-hint">
+      &larr; &rarr; move &middot; &darr; soft drop &middot; &uarr; rotate &middot; <kbd>space</kbd> hard drop &middot; <kbd>shift</kbd> hold &middot; <kbd>p</kbd> pause
+    </p>
+  </div>
+</section>
+
+<!-- ====== GAME SCREEN ====== -->
+<section id="game" class="screen">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">&#9895;</span>
+      <span class="brand-name">DARKTRIS</span>
+    </div>
+    <div class="who">Soul: <strong id="whoLabel">&mdash;</strong></div>
+    <button id="quitBtn" class="btn btn-ghost btn-sm">Forfeit</button>
+  </header>
+
+  <main class="stage">
+    <!-- left rail: HOLD + NEXT -->
+    <aside class="rail rail-left">
+      <div class="panel">
+        <h3 class="panel-title">Hold</h3>
+        <canvas id="holdCanvas" width="120" height="120"></canvas>
+      </div>
+      <div class="panel">
+        <h3 class="panel-title">Next</h3>
+        <canvas id="nextCanvas" width="120" height="360"></canvas>
+      </div>
+    </aside>
+
+    <!-- center: board -->
+    <div class="board-wrap">
+      <canvas id="board" width="300" height="600"></canvas>
+      <div id="overlay" class="overlay hidden">
+        <div class="overlay-inner">
+          <h2 id="overlayTitle">PAUSED</h2>
+          <p id="overlayBody">The void waits.</p>
+          <button id="overlayBtn" class="btn btn-primary">Resume</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- right rail: stats -->
+    <aside class="rail rail-right">
+      <div class="panel stat-panel">
+        <h3 class="panel-title">Score</h3>
+        <div class="stat-value" id="scoreVal">0</div>
+      </div>
+      <div class="panel stat-panel">
+        <h3 class="panel-title">Level</h3>
+        <div class="stat-value lvl" id="levelVal">1</div>
+        <div class="stat-sub">Circle of the Damned</div>
+      </div>
+      <div class="panel stat-panel">
+        <h3 class="panel-title">Lines</h3>
+        <div class="stat-value" id="linesVal">0</div>
+      </div>
+      <div class="panel stat-panel">
+        <h3 class="panel-title">High Score</h3>
+        <div class="stat-value hi" id="highVal">0</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- mobile controls -->
+  <div class="touchpad" id="touchpad">
+    <button data-act="left" class="tbtn">&#9664;</button>
+    <button data-act="rotate" class="tbtn">&#8635;</button>
+    <button data-act="right" class="tbtn">&#9654;</button>
+    <button data-act="hold" class="tbtn small">Hold</button>
+    <button data-act="soft" class="tbtn">&#9660;</button>
+    <button data-act="hard" class="tbtn primary">DROP</button>
+  </div>
+</section>
+
+<!-- ====== LEADERBOARD SCREEN ====== -->
+<section id="board-screen" class="screen">
+  <div class="lb-wrap">
+    <div class="bats">
+      <span>&#77418;</span><span>&#77418;</span><span>&#77418;</span>
+    </div>
+    <h2 class="lb-title">Ledger of the Damned</h2>
+    <p class="lb-sub">Only the worthy carve their name in obsidian.</p>
+
+    <div class="lb-table">
+      <div class="lb-row lb-head">
+        <span class="lb-rank">#</span>
+        <span class="lb-name">Soul</span>
+        <span class="lb-score">Score</span>
+        <span class="lb-lvl">Lvl</span>
+        <span class="lb-lines">Lines</span>
+      </div>
+      <div id="lbBody"></div>
+    </div>
+
+    <div class="lb-actions">
+      <button id="lbBack" class="btn btn-primary">Return to the Pact</button>
+      <button id="lbClear" class="btn btn-ghost">Burn the Ledger</button>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>&#9895; darksalxm &middot; darktris &#9895;</span>
+</footer>
+
+<script src="game.js"></script>
+</body>
+</html>
