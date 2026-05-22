@@ -27,6 +27,7 @@
   const ARR = 33;
   const SOFT_ARR = 28;
   const COUNTDOWN_STEP_MS = 700;
+  const LINE_CLEAR_FLASH_MS = 420;
 
   const COLORS = {
     I: { fill: "#2dffa6", glow: "rgba(45,255,166,0.58)" },
@@ -126,6 +127,10 @@
     finalScore: $("#finalScore"),
     finalLevel: $("#finalLevel"),
     finalLines: $("#finalLines"),
+    finalPieces: $("#finalPieces"),
+    finalBestCombo: $("#finalBestCombo"),
+    finalBestClear: $("#finalBestClear"),
+    finalSurvival: $("#finalSurvival"),
     playAgain: $("#playAgainBtn"),
     menu: $("#menuBtn"),
     lbBody: $("#lbBody"),
@@ -157,6 +162,9 @@
   let highlightedEntry = null;
   let lastScore = 0;
   let clearRowsForFlash = [];
+  let pendingClearRows = [];
+  let lineClearActive = false;
+  let lineClearFlashUntil = 0;
   let inputRepeatTimer = null;
   let inputRepeatInterval = null;
   let piecesPlaced = 0;
@@ -295,6 +303,22 @@
     return Number(value || 0).toLocaleString();
   }
 
+  function formatSurvival(ms) {
+    const totalSec = Math.max(0, Math.floor(ms / 1000));
+    const minutes = Math.floor(totalSec / 60);
+    const seconds = totalSec % 60;
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
+  }
+
+  function survivalMs() {
+    if (!gameStartTime) return 0;
+    return performance.now() - gameStartTime;
+  }
+
+  function isInputBlocked() {
+    return paused || gameOver || countdownActive || lineClearActive;
+  }
+
   function makeGrid() {
     return Array.from({ length: ROWS }, () => Array(COLS).fill(null));
   }
@@ -352,7 +376,7 @@
   }
 
   function tryMove(dx, dy) {
-    if (!active || gameOver || paused) return false;
+    if (!active || isInputBlocked()) return false;
     const moved = { ...active, x: active.x + dx, y: active.y + dy };
     if (valid(moved)) {
       active = moved;
@@ -364,7 +388,7 @@
   }
 
   function tryRotate(dir) {
-    if (!active || gameOver || paused) return false;
+    if (!active || isInputBlocked()) return false;
     const newRot = (active.rot + dir + 4) % 4;
     for (const [kx, ky] of KICKS) {
       const test = { ...active, rot: newRot, x: active.x + kx, y: active.y + ky };
@@ -387,7 +411,7 @@
   }
 
   function hardDrop() {
-    if (!active || paused || gameOver) return;
+    if (!active || isInputBlocked()) return;
     const start = active.y;
     active.y = ghostY();
     const distance = Math.max(0, active.y - start);
@@ -397,7 +421,7 @@
   }
 
   function holdPiece() {
-    if (!active || paused || gameOver || holdUsed) return;
+    if (!active || isInputBlocked() || holdUsed) return;
     const current = active.type;
     if (hold === null) {
       hold = current;
@@ -437,13 +461,47 @@
     cellsOf(active).forEach(([x, y]) => {
       if (y >= 0 && y < ROWS && x >= 0 && x < COLS) grid[y][x] = active.type;
     });
+    active = null;
 
     piecesPlaced++;
     const clearedRows = findFullRows();
-    clearRowsForFlash = clearedRows;
-    const cleared = clearLines(clearedRows);
+    if (!clearedRows.length) {
+      awardScore(0);
+      newActive();
+      updateHUD();
+      draw();
+      return;
+    }
+
+    if (settings.fx && !settings.reducedMotion) {
+      pendingClearRows = clearedRows;
+      clearRowsForFlash = clearedRows;
+      lineClearFlashUntil = performance.now() + LINE_CLEAR_FLASH_MS;
+      lineClearActive = true;
+      triggerLineFlash(clearedRows);
+      draw();
+      return;
+    }
+
+    finishLineClear(clearedRows);
+  }
+
+  function finishLineClear(rows) {
+    if (!rows || !rows.length) {
+      lineClearActive = false;
+      pendingClearRows = [];
+      clearRowsForFlash = [];
+      lineClearFlashUntil = 0;
+      return;
+    }
+
+    const cleared = clearLines(rows);
     if (cleared > bestClear) bestClear = cleared;
     awardScore(cleared);
+    pendingClearRows = [];
+    clearRowsForFlash = [];
+    lineClearActive = false;
+    lineClearFlashUntil = 0;
     newActive();
     updateHUD();
     draw();
@@ -513,7 +571,11 @@
     const delta = Math.min(50, time - lastTime || 0);
     lastTime = time;
 
-    if (!paused && !countdownActive && !gameOver && active) {
+    if (lineClearActive && performance.now() >= lineClearFlashUntil) {
+      finishLineClear(pendingClearRows);
+    }
+
+    if (!paused && !countdownActive && !gameOver && !lineClearActive && active) {
       if (isGrounded(active)) {
         lockTimer += delta;
         if (lockTimer >= LOCK_DELAY) {
@@ -558,6 +620,9 @@
     lastTime = 0;
     lastScore = 0;
     clearRowsForFlash = [];
+    pendingClearRows = [];
+    lineClearActive = false;
+    lineClearFlashUntil = 0;
     piecesPlaced = 0;
     maxCombo = 0;
     bestClear = 0;
@@ -584,22 +649,42 @@
       .slice(0, 14);
   }
 
+  function showPauseOverlay() {
+    paused = true;
+    showOverlay({
+      title: "Paused",
+      body: "The board waits in silence.",
+      primary: "Resume",
+      mode: "pause"
+    });
+    setStatus("Paused");
+    clearAllRepeats();
+    updateHUD();
+  }
+
+  function pauseForModal() {
+    if (!running || gameOver) return;
+    if (countdownActive) {
+      cancelCountdown();
+      showPauseOverlay();
+      return;
+    }
+    if (!paused) togglePause(true);
+  }
+
   function togglePause(forceValue) {
     if (!running || gameOver) return;
+
+    if (countdownActive) {
+      cancelCountdown();
+      showPauseOverlay();
+      return;
+    }
+
     const target = typeof forceValue === "boolean" ? forceValue : !paused;
 
     if (target && !paused) {
-      cancelCountdown();
-      paused = true;
-      showOverlay({
-        title: "Paused",
-        body: "The board waits in silence.",
-        primary: "Resume",
-        mode: "pause"
-      });
-      setStatus("Paused");
-      clearAllRepeats();
-      updateHUD();
+      showPauseOverlay();
     } else if (!target && paused) {
       hideOverlay();
       startResumeCountdown();
@@ -652,6 +737,10 @@
     gameOver = true;
     paused = false;
     running = false;
+    lineClearActive = false;
+    pendingClearRows = [];
+    clearRowsForFlash = [];
+    lineClearFlashUntil = 0;
 
     const result = recordRun({ name: player, score, level, lines });
     highlightedEntry = result.rank >= 0 ? result.entry : null;
@@ -680,6 +769,10 @@
     ui.finalScore.textContent = formatNumber(score);
     ui.finalLevel.textContent = level;
     ui.finalLines.textContent = lines;
+    ui.finalPieces.textContent = formatNumber(piecesPlaced);
+    ui.finalBestCombo.textContent = `x${Math.max(0, maxCombo)}`;
+    ui.finalBestClear.textContent = bestClear > 0 ? String(bestClear) : "—";
+    ui.finalSurvival.textContent = formatSurvival(survivalMs());
   }
 
   function showOverlay({ title, body, primary, mode }) {
@@ -765,12 +858,30 @@
   }
 
   function drawGridBlocks() {
+    const flashRows = lineClearActive ? clearRowsForFlash : [];
+    const flashActive = flashRows.length && performance.now() < lineClearFlashUntil;
+    const flashPulse = flashActive
+      ? 0.45 + 0.55 * Math.abs(Math.sin((lineClearFlashUntil - performance.now()) / 55))
+      : 0;
+
     for (let y = 0; y < ROWS; y++) {
       for (let x = 0; x < COLS; x++) {
         const type = grid[y][x];
         if (type) drawCell(ctx, x, y, type, { settled: true });
       }
     }
+
+    if (!flashActive) return;
+
+    flashRows.forEach(rowY => {
+      ctx.save();
+      ctx.fillStyle = `rgba(45, 255, 166, ${0.18 + flashPulse * 0.42})`;
+      ctx.fillRect(0, rowY * CELL, BOARD_W, CELL);
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.25 + flashPulse * 0.55})`;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1, rowY * CELL + 1, BOARD_W - 2, CELL - 2);
+      ctx.restore();
+    });
   }
 
   function drawPiece(context, piece, options = {}) {
@@ -937,9 +1048,10 @@
     const boardRect = boardCanvas.getBoundingClientRect();
     const wrapRect = ui.lineFlash.parentElement.getBoundingClientRect();
     const scale = boardRect.height / (ROWS * CELL);
-    const firstRow = rows[0];
-    ui.lineFlash.style.top = `${boardRect.top - wrapRect.top + firstRow * CELL * scale}px`;
-    ui.lineFlash.style.height = `${CELL * rows.length * scale}px`;
+    const minRow = Math.min(...rows);
+    const maxRow = Math.max(...rows);
+    ui.lineFlash.style.top = `${boardRect.top - wrapRect.top + minRow * CELL * scale}px`;
+    ui.lineFlash.style.height = `${CELL * (maxRow - minRow + 1) * scale}px`;
     ui.lineFlash.classList.remove("active");
     void ui.lineFlash.offsetWidth;
     ui.lineFlash.classList.add("active");
@@ -1117,7 +1229,7 @@
   }
 
   function runTouchAction(action) {
-    if (!running || paused || gameOver) return;
+    if (!running || isInputBlocked()) return;
     if (action === "left") tryMove(-1, 0);
     if (action === "right") tryMove(1, 0);
     if (action === "rotate") tryRotate(1);
@@ -1164,16 +1276,6 @@
       });
     }
 
-    const introSettings = $("#introSettingsBtn");
-    if (introSettings) {
-      introSettings.addEventListener("click", () => {
-        const dialog = $("#settingsDialog");
-        if (!dialog) return;
-        if (typeof dialog.showModal === "function") dialog.showModal();
-        else dialog.setAttribute("open", "");
-      });
-    }
-
     $("#quitBtn").addEventListener("click", () => {
       if (running && !gameOver) {
         const confirmed = window.confirm("Forfeit this run and return to the pact?");
@@ -1207,7 +1309,18 @@
     });
 
     bindDialog("#guideDialog", "#openGuideBtn", "#closeGuideBtn");
-    bindDialog("#settingsDialog", "#settingsBtn", "#closeSettingsBtn");
+    bindDialog("#settingsDialog", "#settingsBtn", "#closeSettingsBtn", { pauseGameOnOpen: true });
+
+    const introSettings = $("#introSettingsBtn");
+    if (introSettings) {
+      introSettings.addEventListener("click", () => {
+        pauseForModal();
+        const dialog = $("#settingsDialog");
+        if (!dialog) return;
+        if (typeof dialog.showModal === "function") dialog.showModal();
+        else dialog.setAttribute("open", "");
+      });
+    }
 
     $("#ghostToggle").addEventListener("change", event => {
       settings.ghost = event.target.checked;
@@ -1228,13 +1341,14 @@
     });
   }
 
-  function bindDialog(dialogSelector, openSelector, closeSelector) {
+  function bindDialog(dialogSelector, openSelector, closeSelector, options = {}) {
     const dialog = $(dialogSelector);
     const openButton = $(openSelector);
     const closeButton = $(closeSelector);
     if (!dialog || !openButton || !closeButton) return;
 
     openButton.addEventListener("click", () => {
+      if (options.pauseGameOnOpen) pauseForModal();
       if (typeof dialog.showModal === "function") dialog.showModal();
       else dialog.setAttribute("open", "");
     });
@@ -1248,23 +1362,35 @@
     });
   }
 
-  function setupHiDPI(canvas, context, logicalW, logicalH) {
-    const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 3));
-    canvas.style.width = logicalW + "px";
-    canvas.style.height = logicalH + "px";
-    canvas.width = Math.round(logicalW * dpr);
-    canvas.height = Math.round(logicalH * dpr);
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.scale(dpr, dpr);
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
+  function setupResponsiveHiDPI(canvas, context, logicalW, logicalH, onResize) {
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 1 || rect.height < 1) return;
+
+      const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 3));
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      context.setTransform(1, 0, 0, 1, 0, 0);
+      context.scale((rect.width * dpr) / logicalW, (rect.height * dpr) / logicalH);
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      if (onResize) onResize();
+    };
+
+    resize();
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(resize);
+      observer.observe(canvas);
+    } else {
+      window.addEventListener("resize", resize);
+    }
   }
 
   function init() {
     grid = makeGrid();
-    setupHiDPI(boardCanvas, ctx, BOARD_W, BOARD_H);
-    setupHiDPI(nextCanvas, nctx, NEXT_W, NEXT_H);
-    setupHiDPI(holdCanvas, hctx, HOLD_W, HOLD_H);
+    setupResponsiveHiDPI(boardCanvas, ctx, BOARD_W, BOARD_H, draw);
+    setupResponsiveHiDPI(nextCanvas, nctx, NEXT_W, NEXT_H, drawSide);
+    setupResponsiveHiDPI(holdCanvas, hctx, HOLD_W, HOLD_H, drawSide);
     applySettings();
     renderLeaderboard();
     updateHUD();

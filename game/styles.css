@@ -648,12 +648,21 @@ kbd {
 }
 
 .mini-panel canvas {
+  display: block;
   width: 100%;
   max-width: 120px;
   height: auto;
   margin: 0 auto;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.16);
+}
+
+#holdCanvas {
+  aspect-ratio: 1 / 1;
+}
+
+#nextCanvas {
+  aspect-ratio: 1 / 3;
 }
 
 .next-panel canvas {
@@ -716,8 +725,10 @@ kbd {
 }
 
 #board {
+  display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 10 / 20;
   max-height: min(72vh, 720px);
   margin: 0 auto;
   border-radius: 14px;
@@ -738,7 +749,7 @@ kbd {
 }
 
 .line-flash.active {
-  animation: lineFlash 260ms ease-out;
+  animation: lineFlash 420ms ease-out;
 }
 
 .score-pop {
@@ -836,9 +847,15 @@ kbd {
 
 .overlay-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin: 18px 0;
+}
+
+@media (max-width: 420px) {
+  .overlay-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .overlay-stats div {
@@ -1313,8 +1330,12 @@ body.fx-off .fog {
 }
 
 @keyframes lineFlash {
-  0% { opacity: 0; transform: scaleX(0.5); }
-  35% { opacity: 0.95; transform: scaleX(1); }
+  0% { opacity: 0; transform: scaleX(0.55); }
+  12% { opacity: 1; transform: scaleX(1); }
+  24% { opacity: 0.25; transform: scaleX(1); }
+  36% { opacity: 1; transform: scaleX(1); }
+  52% { opacity: 0.35; transform: scaleX(1.02); }
+  68% { opacity: 0.95; transform: scaleX(1.04); }
   100% { opacity: 0; transform: scaleX(1.08); }
 }
 
