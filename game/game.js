@@ -171,6 +171,7 @@
   let maxCombo = 0;
   let bestClear = 0;
   let gameStartTime = 0;
+  let playMs = 0;
   let countdownActive = false;
   let countdownTimer = null;
   const heldKeys = new Set();
@@ -277,8 +278,18 @@
       if (index === 2) classes.push("bronze");
       if (highlight && entry.id === highlight.id) classes.push("you");
 
+      const pieces = Number(entry.pieces) || 0;
+      const bestCombo = Number(entry.bestCombo) || 0;
+      const bestClear = Number(entry.bestClear) || 0;
+      const survival = Number(entry.survivalMs) || 0;
+      const detail =
+        `Pieces ${formatNumber(pieces)} · ` +
+        `Best Combo x${bestCombo} · ` +
+        `Best Clear ${bestClear} · ` +
+        `Survival ${formatSurvival(survival)}`;
+
       return `
-        <div class="${classes.join(" ")}" role="row">
+        <div class="${classes.join(" ")}" role="row" title="${escapeHTML(detail)}" aria-label="Rank ${index + 1}, ${escapeHTML(entry.name)}. Score ${formatNumber(entry.score)}, level ${entry.level}, ${entry.lines} lines. ${escapeHTML(detail)}">
           <span class="lb-rank" role="cell">${index + 1}</span>
           <span class="lb-name" role="cell">${escapeHTML(entry.name)}</span>
           <span class="lb-score" role="cell">${formatNumber(entry.score)}</span>
@@ -311,8 +322,12 @@
   }
 
   function survivalMs() {
-    if (!gameStartTime) return 0;
-    return performance.now() - gameStartTime;
+    return Math.max(0, playMs);
+  }
+
+  function isActivePlay() {
+    return running && !paused && !countdownActive && !gameOver && !lineClearActive
+      && !document.querySelector("dialog[open]");
   }
 
   function isInputBlocked() {
@@ -522,7 +537,6 @@
     grid = grid.filter((_, y) => !rowSet.has(y));
     while (grid.length < ROWS) grid.unshift(Array(COLS).fill(null));
 
-    triggerLineFlash(rows);
     return rows.length;
   }
 
@@ -570,6 +584,8 @@
     if (!running) return;
     const delta = Math.min(50, time - lastTime || 0);
     lastTime = time;
+
+    if (isActivePlay()) playMs += delta;
 
     if (lineClearActive && performance.now() >= lineClearFlashUntil) {
       finishLineClear(pendingClearRows);
@@ -627,8 +643,10 @@
     maxCombo = 0;
     bestClear = 0;
     gameStartTime = performance.now();
+    playMs = 0;
     cancelCountdown();
     clearAllRepeats();
+    clearLineClearState();
 
     ensureQueue();
     newActive();
@@ -737,12 +755,20 @@
     gameOver = true;
     paused = false;
     running = false;
-    lineClearActive = false;
-    pendingClearRows = [];
-    clearRowsForFlash = [];
-    lineClearFlashUntil = 0;
+    cancelCountdown();
+    clearAllRepeats();
+    clearLineClearState();
 
-    const result = recordRun({ name: player, score, level, lines });
+    const result = recordRun({
+      name: player,
+      score,
+      level,
+      lines,
+      pieces: piecesPlaced,
+      bestCombo: Math.max(0, maxCombo),
+      bestClear,
+      survivalMs: survivalMs()
+    });
     highlightedEntry = result.rank >= 0 ? result.entry : null;
     renderLeaderboard(highlightedEntry);
     updateFinalStats();
@@ -783,11 +809,12 @@
     ui.overlay.classList.remove("hidden");
 
     const isGameOver = mode === "gameover";
-    ui.overlayStats.hidden = !isGameOver;
+    const showStats = isGameOver || mode === "pause";
+    ui.overlayStats.hidden = !showStats;
     ui.playAgain.hidden = !isGameOver;
     ui.menu.hidden = false;
 
-    if (isGameOver) updateFinalStats();
+    if (showStats) updateFinalStats();
   }
 
   function hideOverlay() {
@@ -1115,6 +1142,31 @@
     arrTimers.forEach(id => clearTimeout(id));
     dasTimers.clear();
     arrTimers.clear();
+    clearTouchRepeat();
+  }
+
+  function clearLineClearState() {
+    lineClearActive = false;
+    pendingClearRows = [];
+    clearRowsForFlash = [];
+    lineClearFlashUntil = 0;
+    if (ui.lineFlash) ui.lineFlash.classList.remove("active");
+  }
+
+  function resetToMenu() {
+    running = false;
+    paused = false;
+    gameOver = false;
+    cancelCountdown();
+    clearAllRepeats();
+    clearLineClearState();
+    dropTimer = 0;
+    lockTimer = 0;
+    lockResets = 0;
+    lastTime = 0;
+    hideOverlay();
+    showScreen("intro");
+    setStatus("Ready");
   }
 
   function resetBurnConfirm() {
@@ -1281,12 +1333,7 @@
         const confirmed = window.confirm("Forfeit this run and return to the pact?");
         if (!confirmed) return;
       }
-      running = false;
-      paused = false;
-      gameOver = false;
-      hideOverlay();
-      showScreen("intro");
-      setStatus("Ready");
+      resetToMenu();
     });
 
     $("#pauseBtn").addEventListener("click", () => togglePause());
@@ -1300,12 +1347,7 @@
     ui.playAgain.addEventListener("click", () => startGame(false));
 
     ui.menu.addEventListener("click", () => {
-      running = false;
-      paused = false;
-      gameOver = false;
-      hideOverlay();
-      showScreen("intro");
-      setStatus("Ready");
+      resetToMenu();
     });
 
     bindDialog("#guideDialog", "#openGuideBtn", "#closeGuideBtn");

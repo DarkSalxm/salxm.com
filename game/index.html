@@ -175,9 +175,9 @@
                 <div><span>Score</span><strong id="finalScore">0</strong></div>
                 <div><span>Level</span><strong id="finalLevel">1</strong></div>
                 <div><span>Lines</span><strong id="finalLines">0</strong></div>
-                <div><span>Pieces</span><strong id="finalPieces">0</strong></div>
-                <div><span>Best Combo</span><strong id="finalBestCombo">x0</strong></div>
-                <div><span>Best Clear</span><strong id="finalBestClear">0</strong></div>
+                <div class="gameover-only"><span>Pieces</span><strong id="finalPieces">0</strong></div>
+                <div class="gameover-only"><span>Best Combo</span><strong id="finalBestCombo">x0</strong></div>
+                <div class="gameover-only"><span>Best Clear</span><strong id="finalBestClear">0</strong></div>
                 <div><span>Survival</span><strong id="finalSurvival">0:00</strong></div>
               </div>
               <div class="overlay-actions">
@@ -271,67 +271,69 @@
     </div>
   </section>
 
-  <dialog id="guideDialog" class="modal-card">
+  <dialog id="guideDialog" class="modal-card" aria-labelledby="guideDialogTitle" aria-describedby="guideDialogDesc">
     <div class="modal-head">
       <div>
-        <p class="eyebrow">Survival guide</p>
-        <h2>How to play DARKTRIS</h2>
+        <p class="eyebrow" id="guideDialogEyebrow">Survival guide</p>
+        <h2 id="guideDialogTitle">How to play DARKTRIS</h2>
       </div>
       <button class="icon-btn" id="closeGuideBtn" type="button" aria-label="Close controls guide">×</button>
     </div>
-    <div class="guide-grid">
-      <section>
-        <h3>Goal</h3>
+    <p id="guideDialogDesc" class="sr-only">Survival guide for DARKTRIS covering the game goal, scoring, a pro tip, and a full keyboard control reference.</p>
+    <div class="guide-grid" role="group" aria-label="Gameplay overview">
+      <section aria-labelledby="guideGoalHeading">
+        <h3 id="guideGoalHeading">Goal</h3>
         <p>Stack blocks, clear full lines, survive as the level speed rises, and earn a cursed spot on the local leaderboard.</p>
       </section>
-      <section>
-        <h3>Scoring</h3>
+      <section aria-labelledby="guideScoringHeading">
+        <h3 id="guideScoringHeading">Scoring</h3>
         <p>Clearing multiple lines at once gives bigger points. Consecutive clears build combo bonus.</p>
       </section>
-      <section>
-        <h3>Pro tip</h3>
+      <section aria-labelledby="guideTipHeading">
+        <h3 id="guideTipHeading">Pro tip</h3>
         <p>Use Hold to save a clutch piece, watch the ghost outline, and hard drop when your placement is locked in.</p>
       </section>
     </div>
-    <div class="guide-controls">
-      <span><kbd>←</kbd><kbd>→</kbd> Move</span>
-      <span><kbd>↑</kbd><kbd>X</kbd> Rotate</span>
-      <span><kbd>↓</kbd> Soft drop</span>
-      <span><kbd>Space</kbd> Hard drop</span>
-      <span><kbd>Shift</kbd><kbd>C</kbd> Hold</span>
-      <span><kbd>P</kbd><kbd>Esc</kbd> Pause</span>
+    <div class="guide-controls" role="list" aria-label="Keyboard controls">
+      <span role="listitem"><kbd>←</kbd><kbd>→</kbd> Move</span>
+      <span role="listitem"><kbd>↑</kbd><kbd>X</kbd> Rotate</span>
+      <span role="listitem"><kbd>↓</kbd> Soft drop</span>
+      <span role="listitem"><kbd>Space</kbd> Hard drop</span>
+      <span role="listitem"><kbd>Shift</kbd><kbd>C</kbd> Hold</span>
+      <span role="listitem"><kbd>P</kbd><kbd>Esc</kbd> Pause</span>
     </div>
   </dialog>
 
-  <dialog id="settingsDialog" class="modal-card">
+  <dialog id="settingsDialog" class="modal-card" aria-labelledby="settingsDialogTitle" aria-describedby="settingsDialogDesc">
     <div class="modal-head">
       <div>
-        <p class="eyebrow">Arcane tuning</p>
-        <h2>Settings</h2>
+        <p class="eyebrow" id="settingsDialogEyebrow">Arcane tuning</p>
+        <h2 id="settingsDialogTitle">Settings</h2>
       </div>
       <button class="icon-btn" id="closeSettingsBtn" type="button" aria-label="Close settings">×</button>
     </div>
-    <div class="settings-list">
-      <label class="toggle-row">
+    <p id="settingsDialogDesc" class="sr-only">Toggle gameplay assists and visual effects. Changes save automatically to this browser.</p>
+    <div class="settings-list" role="group" aria-label="Gameplay and accessibility toggles">
+      <label class="toggle-row" for="ghostToggle">
         <span>
           <strong>Ghost piece</strong>
-          <small>Show where the active piece will land.</small>
+          <small id="ghostToggleHelp">Show where the active piece will land.</small>
         </span>
-        <input id="ghostToggle" type="checkbox" checked />
+        <input id="ghostToggle" type="checkbox" checked aria-describedby="ghostToggleHelp" />
       </label>
-      <label class="toggle-row">
+      <label class="toggle-row" for="fxToggle">
         <span>
           <strong>Screen effects</strong>
-          <small>Line clear flashes, fog, score pops, and level banners.</small>
+          <small id="fxToggleHelp">Line clear flashes, fog, score pops, and level banners.</small>
         </span>
-        <input id="fxToggle" type="checkbox" checked />
+        <input id="fxToggle" type="checkbox" checked aria-describedby="fxToggleHelp" />
       </label>
-      <label class="toggle-row">
+      <label class="toggle-row" for="motionToggle">
         <span>
           <strong>Reduced motion</strong>
-          <small>Calmer transitions for accessibility and focus.</small>
+          <small id="motionToggleHelp">Calmer transitions for accessibility and focus.</small>
         </span>
-        <input id="motionToggle" type="checkbox" />
+        <input id="motionToggle" type="checkbox" aria-describedby="motionToggleHelp" />
       </label>
     </div>
   </dialog>
