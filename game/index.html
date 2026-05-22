@@ -91,6 +91,7 @@
             <button type="submit" class="btn btn-primary">Begin Descent</button>
             <button type="button" class="btn btn-ghost" id="viewBoardBtn">View Ledger</button>
             <button type="button" class="btn btn-ghost" id="openGuideBtn">Controls</button>
+            <button type="button" class="btn btn-ghost" id="introSettingsBtn">Settings</button>
           </div>
         </form>
 
@@ -163,6 +164,7 @@
           <div id="lineFlash" class="line-flash" aria-hidden="true"></div>
           <div id="scorePop" class="score-pop" aria-live="polite"></div>
           <div id="levelBanner" class="level-banner" aria-live="polite"></div>
+          <div id="countdown" class="countdown hidden" aria-live="polite"></div>
 
           <div id="overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" aria-describedby="overlayBody">
             <div class="overlay-inner panel-glass">
@@ -260,6 +262,7 @@
 
       <div class="lb-actions">
         <button id="lbBack" class="btn btn-primary" type="button">Return to Pact</button>
+        <button id="lbClear" class="btn btn-ghost" type="button">Clear Ledger</button>
       </div>
     </div>
   </section>

@@ -23,6 +23,10 @@
   const LOCK_DELAY = 650;
   const MAX_LOCK_RESETS = 15;
   const VISIBLE_NEXT = 5;
+  const DAS = 133;
+  const ARR = 33;
+  const SOFT_ARR = 28;
+  const COUNTDOWN_STEP_MS = 700;
 
   const COLORS = {
     I: { fill: "#2dffa6", glow: "rgba(45,255,166,0.58)" },
@@ -128,6 +132,7 @@
     lineFlash: $("#lineFlash"),
     scorePop: $("#scorePop"),
     levelBanner: $("#levelBanner"),
+    countdown: $("#countdown"),
     holdHint: $("#holdHint")
   };
 
@@ -154,6 +159,17 @@
   let clearRowsForFlash = [];
   let inputRepeatTimer = null;
   let inputRepeatInterval = null;
+  let piecesPlaced = 0;
+  let maxCombo = 0;
+  let bestClear = 0;
+  let gameStartTime = 0;
+  let countdownActive = false;
+  let countdownTimer = null;
+  const heldKeys = new Set();
+  const dasTimers = new Map();
+  const arrTimers = new Map();
+  let burnConfirmTimer = null;
+  let burnConfirming = false;
 
   const defaultSettings = {
     ghost: true,
@@ -422,9 +438,11 @@
       if (y >= 0 && y < ROWS && x >= 0 && x < COLS) grid[y][x] = active.type;
     });
 
+    piecesPlaced++;
     const clearedRows = findFullRows();
     clearRowsForFlash = clearedRows;
     const cleared = clearLines(clearedRows);
+    if (cleared > bestClear) bestClear = cleared;
     awardScore(cleared);
     newActive();
     updateHUD();
@@ -458,6 +476,7 @@
     }
 
     combo += 1;
+    if (combo > maxCombo) maxCombo = combo;
     const previousLevel = level;
     const baseScores = [0, 100, 300, 500, 800];
     const base = baseScores[cleared] || 800;
@@ -494,7 +513,7 @@
     const delta = Math.min(50, time - lastTime || 0);
     lastTime = time;
 
-    if (!paused && !gameOver && active) {
+    if (!paused && !countdownActive && !gameOver && active) {
       if (isGrounded(active)) {
         lockTimer += delta;
         if (lockTimer >= LOCK_DELAY) {
@@ -535,9 +554,16 @@
     gameOver = false;
     dropTimer = 0;
     lockTimer = 0;
+    lockResets = 0;
     lastTime = 0;
     lastScore = 0;
     clearRowsForFlash = [];
+    piecesPlaced = 0;
+    maxCombo = 0;
+    bestClear = 0;
+    gameStartTime = performance.now();
+    cancelCountdown();
+    clearAllRepeats();
 
     ensureQueue();
     newActive();
@@ -560,8 +586,11 @@
 
   function togglePause(forceValue) {
     if (!running || gameOver) return;
-    paused = typeof forceValue === "boolean" ? forceValue : !paused;
-    if (paused) {
+    const target = typeof forceValue === "boolean" ? forceValue : !paused;
+
+    if (target && !paused) {
+      cancelCountdown();
+      paused = true;
       showOverlay({
         title: "Paused",
         body: "The board waits in silence.",
@@ -569,12 +598,53 @@
         mode: "pause"
       });
       setStatus("Paused");
-    } else {
+      clearAllRepeats();
+      updateHUD();
+    } else if (!target && paused) {
       hideOverlay();
-      setStatus("Playing");
-      lastTime = performance.now();
+      startResumeCountdown();
+      updateHUD();
     }
-    updateHUD();
+  }
+
+  function startResumeCountdown() {
+    cancelCountdown();
+    countdownActive = true;
+    paused = true;
+    setStatus("Resuming");
+    const steps = ["3", "2", "1", "GO"];
+    let i = 0;
+    const tick = () => {
+      if (i >= steps.length) {
+        ui.countdown.classList.add("hidden");
+        ui.countdown.textContent = "";
+        countdownActive = false;
+        paused = false;
+        setStatus("Playing");
+        lastTime = performance.now();
+        updateHUD();
+        return;
+      }
+      ui.countdown.textContent = steps[i];
+      ui.countdown.classList.remove("hidden", "pulse");
+      void ui.countdown.offsetWidth;
+      ui.countdown.classList.add("pulse");
+      i++;
+      countdownTimer = setTimeout(tick, i === steps.length ? 380 : COUNTDOWN_STEP_MS);
+    };
+    tick();
+  }
+
+  function cancelCountdown() {
+    if (countdownTimer) {
+      clearTimeout(countdownTimer);
+      countdownTimer = null;
+    }
+    countdownActive = false;
+    if (ui.countdown) {
+      ui.countdown.classList.add("hidden");
+      ui.countdown.textContent = "";
+    }
   }
 
   function endGame() {
@@ -898,6 +968,56 @@
     showScorePop("New High Score");
   }
 
+  function softDropAction() {
+    if (tryMove(0, 1)) {
+      score += 1;
+      updateHUD();
+    }
+  }
+
+  function startRepeat(key, action, arrMs) {
+    stopRepeat(key);
+    const dasId = setTimeout(() => {
+      const tick = () => {
+        if (!heldKeys.has(key)) return;
+        action();
+        arrTimers.set(key, setTimeout(tick, arrMs));
+      };
+      tick();
+    }, DAS);
+    dasTimers.set(key, dasId);
+  }
+
+  function stopRepeat(key) {
+    const das = dasTimers.get(key);
+    const arr = arrTimers.get(key);
+    if (das) clearTimeout(das);
+    if (arr) clearTimeout(arr);
+    dasTimers.delete(key);
+    arrTimers.delete(key);
+  }
+
+  function clearAllRepeats() {
+    heldKeys.clear();
+    dasTimers.forEach(id => clearTimeout(id));
+    arrTimers.forEach(id => clearTimeout(id));
+    dasTimers.clear();
+    arrTimers.clear();
+  }
+
+  function resetBurnConfirm() {
+    burnConfirming = false;
+    const btn = $("#lbClear");
+    if (btn) {
+      btn.classList.remove("danger-confirm");
+      btn.textContent = "Clear Ledger";
+    }
+    if (burnConfirmTimer) {
+      clearTimeout(burnConfirmTimer);
+      burnConfirmTimer = null;
+    }
+  }
+
   function handleKeydown(event) {
     const activeElement = document.activeElement;
     const typing = activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName);
@@ -911,20 +1031,26 @@
     const gameKeys = ["arrowleft", "arrowright", "arrowdown", "arrowup", " ", "spacebar", "shift", "c", "x", "z", "p", "escape"];
     if (gameKeys.includes(key)) event.preventDefault();
 
+    if (event.repeat) return;
+    if (heldKeys.has(key)) return;
+
     if (!running && key !== "p") return;
+    if (countdownActive && key !== "p" && key !== "escape") return;
+
+    heldKeys.add(key);
 
     switch (key) {
       case "arrowleft":
         tryMove(-1, 0);
+        startRepeat(key, () => tryMove(-1, 0), ARR);
         break;
       case "arrowright":
         tryMove(1, 0);
+        startRepeat(key, () => tryMove(1, 0), ARR);
         break;
       case "arrowdown":
-        if (tryMove(0, 1)) {
-          score += 1;
-          updateHUD();
-        }
+        softDropAction();
+        startRepeat(key, softDropAction, SOFT_ARR);
         break;
       case "arrowup":
       case "x":
@@ -946,6 +1072,12 @@
         togglePause();
         break;
     }
+  }
+
+  function handleKeyup(event) {
+    const key = event.key.toLowerCase();
+    heldKeys.delete(key);
+    stopRepeat(key);
   }
 
   function bindTouchControls() {
@@ -1011,6 +1143,36 @@
     });
 
     $("#lbBack").addEventListener("click", () => showScreen("intro"));
+
+    const lbClearBtn = $("#lbClear");
+    if (lbClearBtn) {
+      lbClearBtn.addEventListener("click", () => {
+        if (!burnConfirming) {
+          burnConfirming = true;
+          lbClearBtn.classList.add("danger-confirm");
+          lbClearBtn.textContent = "Click again to confirm";
+          if (burnConfirmTimer) clearTimeout(burnConfirmTimer);
+          burnConfirmTimer = setTimeout(resetBurnConfirm, 3000);
+          return;
+        }
+        if (burnConfirmTimer) clearTimeout(burnConfirmTimer);
+        saveBoard([]);
+        highlightedEntry = null;
+        renderLeaderboard();
+        updateHUD();
+        resetBurnConfirm();
+      });
+    }
+
+    const introSettings = $("#introSettingsBtn");
+    if (introSettings) {
+      introSettings.addEventListener("click", () => {
+        const dialog = $("#settingsDialog");
+        if (!dialog) return;
+        if (typeof dialog.showModal === "function") dialog.showModal();
+        else dialog.setAttribute("open", "");
+      });
+    }
 
     $("#quitBtn").addEventListener("click", () => {
       if (running && !gameOver) {
@@ -1111,6 +1273,8 @@
     bindUI();
     bindTouchControls();
     document.addEventListener("keydown", handleKeydown);
+    document.addEventListener("keyup", handleKeyup);
+    window.addEventListener("blur", clearAllRepeats);
   }
 
   init();

@@ -1235,6 +1235,50 @@ body.fx-off .fog {
   80%      { opacity: 0;    transform: scale(0.7) rotate(80deg); }
 }
 
+.countdown {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(4rem, 14vw, 9rem);
+  color: var(--bone);
+  text-shadow:
+    0 0 24px var(--blood-glow),
+    0 4px 0 #000,
+    0 14px 32px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  z-index: 6;
+  letter-spacing: 0.04em;
+}
+
+.countdown.hidden { display: none; }
+
+.countdown.pulse {
+  animation: countdownPop 700ms ease-out;
+}
+
+@keyframes countdownPop {
+  0%   { opacity: 0; transform: scale(0.4); }
+  35%  { opacity: 1; transform: scale(1.15); }
+  70%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.92); }
+}
+
+.btn.danger-confirm {
+  background: linear-gradient(180deg, var(--blood-2), var(--blood));
+  border-color: var(--blood-3);
+  color: var(--bone);
+  animation: dangerPulse 700ms ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--blood-glow), 0 8px 24px rgba(179, 0, 27, 0.4); }
+  50%      { box-shadow: 0 0 0 8px rgba(230, 57, 80, 0), 0 8px 24px rgba(179, 0, 27, 0.6); }
+}
+
 .sigil-spawner {
   position: fixed;
   inset: 0;
